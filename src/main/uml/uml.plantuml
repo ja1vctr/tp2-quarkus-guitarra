@@ -1,0 +1,180 @@
+@startuml uml
+abstract class Produto {
+    - id: Integer
+    - preco: Double
+    - nome: String
+    - status: boolean
+    - quantidade: Integer
+}
+
+class Guitarra extends Produto {
+    - modelo: String
+    - madeira: String
+    - Peso: Double
+    - assinatura: String
+    - blindagemEletronica: boolean
+    - numeroCordas: Integer
+}
+
+
+class Braco {
+    - formato: String
+    - madeira: String
+    - numeroTrastes: Integer
+}
+
+class Captador {
+    - marca: String
+    - modelo: String
+    - posicao: String
+}
+
+class Ponte {
+    - modelo: String
+    - marca: String
+}
+
+class Tarrachas {
+    - marca: String
+    - material: String
+    - modelo: String
+}
+
+class Cor {
+    - nome: String
+    - codigoHexadecimal: String
+}
+
+Class Marca { 
+    - nome: String
+    - cnpj: String
+}
+
+class Pedido {
+    - id: Integer
+    - data: LocalDateTime
+    - precoTotal: Double
+}
+
+class ItemPedido {
+    - quantidade: Integer
+    - precoUnitario: Double
+}
+
+class Pessoa {
+    - nome: String
+    - cpf: String
+    - dataNascimento: localDate
+}
+
+class Usuario {
+    - email: string
+    - senha: String
+}
+
+class Cliente {
+    - permitirMarketing: boolean
+}
+
+class Funcionario {
+    - salario: Double
+    - dataAdmissao: LocalDate
+}
+
+class Avaliacao {
+    - comentario: String
+}
+
+enum Estrela {
+    + ESTRELA_1: int
+    + ESTRELA_2: int
+    + ESTRELA_3: int
+    + ESTRELA_4: int
+    + ESTRELA_5: int
+}
+
+class Endereco {
+    - cep: String
+    - estado: String
+    - cidade: String
+    - bairro: String
+    - rua: String
+    - numero: Integer
+}
+
+abstract Pagamento {
+    - valor: Double
+    - data: LocalDateTime
+    - status: String
+}
+
+class Boleto extends Pagamento {
+    - codigoBarras: String
+    - dataVencimento: LocalDate
+}
+
+class CartaoCredito extends Pagamento {
+    - numeroCartao: String
+    - nomeTitular: String
+    - dataValidade: String
+    - codigoSeguranca: String
+    - parcelas: Integer
+    - bandeira: String
+}
+
+class Pix extends Pagamento {
+    - chavePix: String
+    - dataPagamento: LocalDateTime
+}
+
+enum Genero {
+    + MASCULINO: int
+    + FEMININO: int
+}
+
+class StatusPedido {
+    - dataStatus: LocalDateTime
+}
+
+enum Status {
+    + AGUARDANDO_PAGAMENTO: int
+    + PAGAMENTO_EXPIRADO: int
+    + PAGAMENTO_CONFIRMADO: int
+    + SEPARADO_DO_ESTOQUE: int
+    + ENTREGUE_A_TRANSPORTADORA: int
+    + EM_TRANSITO: int
+    + ENTREGUE: int
+}
+
+
+Guitarra "*" o--> "1" Braco
+Guitarra "*" o--> "*" Captador
+Guitarra "*" o--> "1" Ponte
+Guitarra "*" o--> "1" Tarrachas
+Guitarra "*" o--> "1" Cor
+Guitarra "*" o--> "1" Marca
+Guitarra "*" o--> "1" Modelo
+
+Marca "*" o--> "*" Modelo
+
+ItemPedido "*" --> "1" Produto
+
+Pedido "1" --> "*" ItemPedido
+
+Pessoa --> "1" Usuario
+Pessoa --> Genero
+Pessoa "1" o--> "*" Endereco
+
+Cliente "1" --> "1" Pessoa
+Funcionario "1" -->"1" Pessoa
+
+Pedido "*" o--> "1" Cliente
+Pedido "1" *--> "1" Pagamento
+Pedido "*" -left-> "*" StatusPedido
+StatusPedido -left-> Status
+
+Produto "1" o--> "*" Avaliacao
+Avaliacao "1" --> "1" Cliente
+Avaliacao -right-> Estrela
+
+@enduml

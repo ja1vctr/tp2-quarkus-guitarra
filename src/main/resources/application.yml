@@ -1,0 +1,51 @@
+quarkus:
+  datasource:
+    db-kind: postgresql
+    username: joao
+    password: "123456"
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/guitarra
+    devservices: ## Habilita o Quarkus a usar o container configurado no docker-compose.yml
+      enabled: false
+
+  ## Configurações do Hibernate ORM    
+  hibernate-orm:
+    database:
+      generation: drop-and-create
+    log:
+      sql: true
+  
+  ## Configurações do Log
+  log:
+    console:
+      color: true
+      format: "%d{HH:mm:ss} %-5p [%c{2.}] (%t) %s%e%n"
+      level: INFO
+
+  ##  Configuração para habilitar o CORS
+  http:
+    cors:
+      enabled: true
+      origins: http://localhost:4200
+      methods: GET,PUT,POST,DELETE,PATCH
+      headers: accept, authorization, content-type, x-requested-with, Authorization
+      exposed-headers:
+        - "*"
+        - Authorization
+      access-control-max-age: 24H
+      access-control-allow-credentials: true
+
+## Configurações do JWT
+mp:
+  jwt:
+    verify:
+      publickey:
+        location: src/main/token/publicKey.pem
+      issuer: unitins-jwt
+
+## Configurações do SmallRye JWT
+smallrye:
+  jwt:
+    sign:
+      key:
+        location: src/main/token/privateKey.pem

@@ -19,8 +19,6 @@ public record GuitarraRequest(
 
   // Atributos de Guitarra
   Integer anoFabricacao,
-  @NotBlank(message = "O campo modelo não pode ser nulo.")
-  String modelo,
   String madeira,
   Double peso,
   String assinatura,
@@ -30,12 +28,14 @@ public record GuitarraRequest(
 
   // IDs de Relacionamentos
   @NotNull(message = "O id da marca não pode ser nulo.")
-  Long idMarca,
   Long idBraco,
   Long idCaptadorBraco,
   Long idCaptadorMeio,
   Long idCaptadorPonte,
   Long idCor,
   Long idPonte,
+  Long idMarca,
+  @NotBlank(message = "O campo modelo não pode ser nulo.")
+  Long idModelo,
   Long idTarracha
 ) {}

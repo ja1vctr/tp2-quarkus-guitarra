@@ -10,6 +10,7 @@ import br.unitins.guitarra.model.produto.Captador;
 import br.unitins.guitarra.model.produto.Cor;
 import br.unitins.guitarra.model.produto.Guitarra;
 import br.unitins.guitarra.model.produto.Marca;
+import br.unitins.guitarra.model.produto.Modelo;
 import br.unitins.guitarra.model.produto.Ponte;
 import br.unitins.guitarra.model.produto.Tarracha;
 import br.unitins.guitarra.repository.produto.BracoRepository;
@@ -17,6 +18,7 @@ import br.unitins.guitarra.repository.produto.CaptadorRepository;
 import br.unitins.guitarra.repository.produto.CorRepository;
 import br.unitins.guitarra.repository.produto.GuitarraRepository;
 import br.unitins.guitarra.repository.produto.MarcaRepository;
+import br.unitins.guitarra.repository.produto.ModeloRepository;
 import br.unitins.guitarra.repository.produto.PonteRepository;
 import br.unitins.guitarra.repository.produto.TarrachaRepository;
 import br.unitins.guitarra.validation.ValidationException;
@@ -35,16 +37,19 @@ public class GuitarraServiceImp implements GuitarraService {
   GuitarraRepository repository;
 
   @Inject
-  MarcaRepository marcaRepository;
-
-  @Inject
   BracoRepository bracoRepository;
-
+  
   @Inject
   CaptadorRepository captadorRepository;
-
+  
   @Inject
   CorRepository corRepository;
+  
+  @Inject
+  MarcaRepository marcaRepository;
+  
+  @Inject
+  ModeloRepository modeloRepository;
 
   @Inject
   PonteRepository ponteRepository;
@@ -64,12 +69,13 @@ public class GuitarraServiceImp implements GuitarraService {
     }
 
     // Busca as entidades relacionadas
-    Marca marca = findMarcaById(request.idMarca());
     Braco braco = findBracoById(request.idBraco());
     Captador captadorBraco = findCaptadorById(request.idCaptadorBraco());
     Captador captadorMeio = findCaptadorById(request.idCaptadorMeio());
     Captador captadorPonte = findCaptadorById(request.idCaptadorPonte());
     Cor cor = findCorById(request.idCor());
+    Marca marca = findMarcaById(request.idMarca());
+    Modelo modelo = findModeloById(request.idModelo());
     Ponte ponte = findPonteById(request.idPonte());
     Tarracha tarracha = findTarrachaById(request.idTarracha());
 
@@ -85,16 +91,16 @@ public class GuitarraServiceImp implements GuitarraService {
     newGuitarra.setAssinatura(request.assinatura());
     newGuitarra.setBlindagemEletronica(request.blindagemEletronica());
     newGuitarra.setMadeira(request.madeira());
-    newGuitarra.setModelo(request.modelo()); // Duplicado, mas mantendo como no original
     newGuitarra.setNumeroDeCordas(request.numeroDeCordas());
     newGuitarra.setPeso(request.peso());
     // Relacionamentos
-    newGuitarra.setMarca(marca);
     newGuitarra.setBraco(braco);
     newGuitarra.setCaptadorBraco(captadorBraco);
     newGuitarra.setCaptadorMeio(captadorMeio);
     newGuitarra.setCaptadorPonte(captadorPonte);
     newGuitarra.setCor(cor);
+    newGuitarra.setMarca(marca);
+    newGuitarra.setModelo(modelo);
     newGuitarra.setPonte(ponte);
     newGuitarra.setTarracha(tarracha);
 
@@ -117,12 +123,13 @@ public class GuitarraServiceImp implements GuitarraService {
     }
 
     // Busca as entidades relacionadas
-    Marca marca = findMarcaById(request.idMarca());
     Braco braco = findBracoById(request.idBraco());
     Captador captadorBraco = findCaptadorById(request.idCaptadorBraco());
     Captador captadorMeio = findCaptadorById(request.idCaptadorMeio());
     Captador captadorPonte = findCaptadorById(request.idCaptadorPonte());
     Cor cor = findCorById(request.idCor());
+    Marca marca = findMarcaById(request.idMarca());
+    Modelo modelo = findModeloById(request.idModelo());
     Ponte ponte = findPonteById(request.idPonte());
     Tarracha tarracha = findTarrachaById(request.idTarracha());
 
@@ -137,16 +144,16 @@ public class GuitarraServiceImp implements GuitarraService {
     guitarra.setAssinatura(request.assinatura());
     guitarra.setBlindagemEletronica(request.blindagemEletronica());
     guitarra.setMadeira(request.madeira());
-    guitarra.setModelo(request.modelo());
     guitarra.setNumeroDeCordas(request.numeroDeCordas());
     guitarra.setPeso(request.peso());
     // Relacionamentos
-    guitarra.setMarca(marca);
     guitarra.setBraco(braco);
     guitarra.setCaptadorBraco(captadorBraco);
     guitarra.setCaptadorMeio(captadorMeio);
     guitarra.setCaptadorPonte(captadorPonte);
     guitarra.setCor(cor);
+    guitarra.setMarca(marca);
+    guitarra.setModelo(modelo);
     guitarra.setPonte(ponte);
     guitarra.setTarracha(tarracha);
   }
@@ -221,6 +228,14 @@ public class GuitarraServiceImp implements GuitarraService {
       throw new ValidationException("idMarca", "A marca com o id " + id + " não foi encontrada.");
     }
     return marca;
+  }
+
+  private Modelo findModeloById(Long id) {
+    Modelo modelo = modeloRepository.findById(id);
+    if (modelo == null) {
+      throw new ValidationException("idMarca", "A modelo com o id " + id + " não foi encontrada.");
+    }
+    return modelo;
   }
 
   private Braco findBracoById(Long id) {

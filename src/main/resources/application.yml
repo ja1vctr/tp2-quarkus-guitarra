@@ -5,7 +5,7 @@ quarkus:
     password: "123456"
     jdbc:
       url: jdbc:postgresql://localhost:5432/guitarra
-    devservices: ## Habilita o Quarkus a usar o container configurado no docker-compose.yml
+    devservices: # Habilita o Quarkus a usar o container configurado no docker-compose.yml
       enabled: false
 
   ## Configurações do Hibernate ORM    

@@ -8,14 +8,12 @@ abstract class Produto {
 }
 
 class Guitarra extends Produto {
-    - modelo: String
     - madeira: String
     - Peso: Double
     - assinatura: String
     - blindagemEletronica: boolean
     - numeroCordas: Integer
 }
-
 
 class Braco {
     - formato: String
@@ -48,6 +46,10 @@ class Cor {
 Class Marca { 
     - nome: String
     - cnpj: String
+}
+
+Class Modelo { 
+    - nome: String
 }
 
 class Pedido {

@@ -32,7 +32,9 @@ public class Guitarra extends Produto{
   @JoinColumn(name = "id_marca")
   private Marca marca;
   private String madeira;
-  private String modelo;
+  @ManyToOne
+  @JoinColumn(name = "id_modelo")
+  private Modelo modelo;
   private Integer numeroDeCordas;
   private Double peso;
   @ManyToOne

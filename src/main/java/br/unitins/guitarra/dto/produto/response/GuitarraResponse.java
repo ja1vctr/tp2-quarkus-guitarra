@@ -14,7 +14,6 @@ public record GuitarraResponse(
 
     // Atributos de Guitarra
     Integer anoFabricacao,
-    String modelo,
     String madeira,
     Double peso,
     String assinatura,
@@ -28,6 +27,7 @@ public record GuitarraResponse(
     CaptadorResponse captadorPonte,
     CorResponse cor,
     MarcaResponse marca,
+    ModeloResponse modelo,
     PonteResponse ponte,
     TarrachaResponse tarracha
 ) {
@@ -44,7 +44,6 @@ public record GuitarraResponse(
             guitarra.getImagem(),
             // Atributos de Guitarra
             guitarra.getAnoFabricacao(),
-            guitarra.getModelo(),
             guitarra.getMadeira(),
             guitarra.getPeso(),
             guitarra.getAssinatura(),
@@ -58,6 +57,7 @@ public record GuitarraResponse(
             CaptadorResponse.valueOf(guitarra.getCaptadorPonte()),
             CorResponse.valueOf(guitarra.getCor()),
             MarcaResponse.valueOf(guitarra.getMarca()),
+            ModeloResponse.valueOf(guitarra.getModelo()),
             PonteResponse.valueOf(guitarra.getPonte()),
             TarrachaResponse.valueOf(guitarra.getTarracha())
         );

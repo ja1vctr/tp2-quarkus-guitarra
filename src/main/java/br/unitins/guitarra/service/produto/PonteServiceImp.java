@@ -56,7 +56,7 @@ public class PonteServiceImp implements PonteService {
 
         Ponte ponte = repository.findById(id);
         if (ponte == null) {
-            throw new ValidationException("ponte", "Ponte não encontrada pelo ID " + id);
+            throw ValidationException.of("ponte", "Ponte não encontrada pelo ID " + id);
         }
 
         ponte.setMarca(request.marca());
@@ -68,11 +68,11 @@ public class PonteServiceImp implements PonteService {
     public void delete(Long id) {
         Ponte ponte = repository.findById(id);
         if (ponte == null) {
-            throw new ValidationException("ponte", "Ponte não encontrada pelo ID " + id);
+            throw ValidationException.of("ponte", "Ponte não encontrada pelo ID " + id);
         }
 
         if (guitarraRepository.count("ponte", ponte) > 0) {
-            throw new ValidationException("ponte", "Esta ponte está em uso e não pode ser excluída.");
+            throw ValidationException.of("ponte", "Esta ponte está em uso e não pode ser excluída.");
         }
 
         repository.delete(ponte);
@@ -94,7 +94,7 @@ public class PonteServiceImp implements PonteService {
     @Override
     public PonteResponse findById(Long id) {
         Ponte ponte = repository.findById(id);
-        if (ponte == null) throw new ValidationException("ponte", "Ponte não encontrada pelo ID " + id);
+        if (ponte == null) throw ValidationException.of("ponte", "Ponte não encontrada pelo ID " + id);
         return PonteResponse.valueOf(ponte);
     }
 

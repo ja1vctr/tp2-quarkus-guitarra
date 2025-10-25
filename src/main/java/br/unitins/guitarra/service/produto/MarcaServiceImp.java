@@ -38,13 +38,13 @@ public class MarcaServiceImp implements MarcaService {
         }
 
         if (repository.findByCnpj(request.cnpj()) != null) {
-            throw new ValidationException("cnpj", "O CNPJ '" + request.cnpj() + "' já existe.");
+            throw ValidationException.of("cnpj", "O CNPJ '" + request.cnpj() + "' já existe.");
         }
 
         Marca newMarca = new Marca();
         newMarca.setNome(request.nome());
         if(request.cnpj().length() != 14)
-            throw new ValidationException("cnpj", "O CNPJ deve conter 14 caracteres.");
+            throw ValidationException.of("cnpj", "O CNPJ deve conter 14 caracteres.");
         newMarca.setCnpj(request.cnpj());
 
         repository.persist(newMarca);
@@ -62,11 +62,11 @@ public class MarcaServiceImp implements MarcaService {
 
         Marca marca = repository.findById(id);
         if (marca == null) {
-            throw new ValidationException("id", "A marca com o id " + id + " não foi encontrada.");
+            throw ValidationException.of("id", "A marca com o id " + id + " não foi encontrada.");
         }
         Marca marcaComMesmoCnpj = repository.findByCnpj(request.cnpj());
         if (marcaComMesmoCnpj != null) {
-            throw new ValidationException("cnpj", "O CNPJ '" + request.cnpj() + "' já está em uso por outra marca.");
+            throw ValidationException.of("cnpj", "O CNPJ '" + request.cnpj() + "' já está em uso por outra marca.");
         }
 
         marca.setNome(request.nome());
@@ -78,11 +78,11 @@ public class MarcaServiceImp implements MarcaService {
     public void delete(Long id) {
         Marca marca = repository.findById(id);
         if (marca == null) {
-            throw new ValidationException("id", "A marca com o id " + id + " não foi encontrada.");
+            throw ValidationException.of("id", "A marca com o id " + id + " não foi encontrada.");
         }
 
         if (guitarraRepository.count("marca", marca) > 0) {
-            throw new ValidationException("marca", "Esta marca está em uso e não pode ser excluída.");
+            throw ValidationException.of("marca", "Esta marca está em uso e não pode ser excluída.");
         }
 
         repository.delete(marca);
@@ -104,7 +104,7 @@ public class MarcaServiceImp implements MarcaService {
     @Override
     public MarcaResponse findById(Long id) {
         Marca marca = repository.findById(id);
-        if (marca == null) throw new ValidationException("id", "A marca com o id " + id + " não foi encontrada.");
+        if (marca == null) throw ValidationException.of("id", "A marca com o id " + id + " não foi encontrada.");
         return MarcaResponse.valueOf(marca);
     }
 

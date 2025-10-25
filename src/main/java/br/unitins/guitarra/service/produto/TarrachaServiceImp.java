@@ -57,7 +57,7 @@ public class TarrachaServiceImp implements TarrachaService {
 
         Tarracha tarracha = repository.findById(id);
         if (tarracha == null) {
-            throw new ValidationException("id", "A tarracha com o id " + id + " não foi encontrada.");
+            throw ValidationException.of("id", "A tarracha com o id " + id + " não foi encontrada.");
         }
 
         tarracha.setMarca(request.marca());
@@ -70,11 +70,11 @@ public class TarrachaServiceImp implements TarrachaService {
     public void delete(Long id) {
         Tarracha tarracha = repository.findById(id);
         if (tarracha == null) {
-            throw new ValidationException("id", "A tarracha com o id " + id + " não foi encontrada.");
+            throw ValidationException.of("id", "A tarracha com o id " + id + " não foi encontrada.");
         }
 
         if (guitarraRepository.count("tarracha", tarracha) > 0) {
-            throw new ValidationException("tarracha", "Esta tarracha está em uso e não pode ser excluída.");
+            throw ValidationException.of("tarracha", "Esta tarracha está em uso e não pode ser excluída.");
         }
 
         repository.delete(tarracha);
@@ -96,7 +96,7 @@ public class TarrachaServiceImp implements TarrachaService {
     @Override
     public TarrachaResponse findById(Long id) {
         Tarracha tarracha = repository.findById(id);
-        if (tarracha == null) throw new ValidationException("id", "A tarracha com o id " + id + " não foi encontrada.");
+        if (tarracha == null) throw ValidationException.of("id", "A tarracha com o id " + id + " não foi encontrada.");
         return TarrachaResponse.valueOf(tarracha);
     }
 

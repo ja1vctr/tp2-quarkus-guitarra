@@ -4,9 +4,10 @@ import java.util.List;
 
 import br.unitins.guitarra.dto.produto.request.GuitarraRequest;
 import br.unitins.guitarra.dto.produto.response.GuitarraResponse;
+import jakarta.validation.Valid;
 
 public interface GuitarraService {
-  GuitarraResponse create(GuitarraRequest request);
+  GuitarraResponse create(@Valid GuitarraRequest request);
   void update(GuitarraRequest request, Long id);
   void delete(Long id);
   List<GuitarraResponse> findAll(Integer page, Integer pageSize);

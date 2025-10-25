@@ -54,7 +54,7 @@ public class ModeloServiceImp implements ModeloService {
 
       Modelo modelo = repository.findById(id);
       if (modelo == null) {
-          throw new ValidationException("id", "O modelo com o id " + id + " não foi encontrada.");
+          throw ValidationException.of("id", "O modelo com o id " + id + " não foi encontrada.");
       }
 
       modelo.setNome(request.nome());
@@ -65,11 +65,11 @@ public class ModeloServiceImp implements ModeloService {
   public void delete(Long id) {
       Modelo modelo = repository.findById(id);
       if (modelo == null) {
-          throw new ValidationException("id", "A modelo com o id " + id + " não foi encontrada.");
+          throw ValidationException.of("id", "A modelo com o id " + id + " não foi encontrada.");
       }
 
       if (guitarraRepository.count("modelo", modelo) > 0) {
-          throw new ValidationException("modelo", "Esta modelo está em uso e não pode ser excluída.");
+          throw ValidationException.of("modelo", "Esta modelo está em uso e não pode ser excluída.");
       }
 
       repository.delete(modelo);
@@ -91,7 +91,7 @@ public class ModeloServiceImp implements ModeloService {
   @Override
   public ModeloResponse findById(Long id) {
       Modelo modelo = repository.findById(id);
-      if (modelo == null) throw new ValidationException("id", "A modelo com o id " + id + " não foi encontrada.");
+      if (modelo == null) throw ValidationException.of("id", "A modelo com o id " + id + " não foi encontrada.");
       return ModeloResponse.valueOf(modelo);
   }
 

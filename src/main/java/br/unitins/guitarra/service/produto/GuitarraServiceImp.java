@@ -119,7 +119,7 @@ public class GuitarraServiceImp implements GuitarraService {
 
     Guitarra guitarra = repository.findById(id);
     if (guitarra == null) {
-      throw new ValidationException("id", "A guitarra com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("id", "A guitarra com o id " + id + " não foi encontrada.");
     }
 
     // Busca as entidades relacionadas
@@ -162,7 +162,7 @@ public class GuitarraServiceImp implements GuitarraService {
   @Transactional
   public void delete(Long id) {
     if(repository.findById(id) == null)
-      throw new ValidationException("id", "A guitarra com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("id", "A guitarra com o id " + id + " não foi encontrada.");
     repository.deleteById(id);
   }
   
@@ -182,11 +182,11 @@ public class GuitarraServiceImp implements GuitarraService {
   @Override
   public GuitarraResponse findById(Long id) {
     if(id == null) {
-      throw new ValidationException("id", "O id para busca não pode ser nulo.");
+      throw ValidationException.of("id", "O id para busca não pode ser nulo.");
     }
     Guitarra guitarra = repository.findById(id);
     if (guitarra == null) {
-      throw new ValidationException("id", "A guitarra com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("id", "A guitarra com o id " + id + " não foi encontrada.");
     }
     return GuitarraResponse.valueOf(guitarra);
   }
@@ -194,7 +194,7 @@ public class GuitarraServiceImp implements GuitarraService {
   @Override
   public List<GuitarraResponse> findByNome(String nome) {
     if(nome == null || nome.isEmpty()) {
-      throw new ValidationException("nome", "O nome para busca não pode ser nulo ou vazio.");
+      throw ValidationException.of("nome", "O nome para busca não pode ser nulo ou vazio.");
     }
     return repository.findByNome(nome).
                       stream().
@@ -225,7 +225,7 @@ public class GuitarraServiceImp implements GuitarraService {
   private Marca findMarcaById(Long id) {
     Marca marca = marcaRepository.findById(id);
     if (marca == null) {
-      throw new ValidationException("idMarca", "A marca com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("idMarca", "A marca com o id " + id + " não foi encontrada.");
     }
     return marca;
   }
@@ -233,7 +233,7 @@ public class GuitarraServiceImp implements GuitarraService {
   private Modelo findModeloById(Long id) {
     Modelo modelo = modeloRepository.findById(id);
     if (modelo == null) {
-      throw new ValidationException("idMarca", "A modelo com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("idMarca", "A modelo com o id " + id + " não foi encontrada.");
     }
     return modelo;
   }
@@ -242,7 +242,7 @@ public class GuitarraServiceImp implements GuitarraService {
     if (id == null) return null;
     Braco braco = bracoRepository.findById(id);
     if (braco == null) {
-      throw new ValidationException("idBraco", "O braço com o id " + id + " não foi encontrado.");
+      throw ValidationException.of("idBraco", "O braço com o id " + id + " não foi encontrado.");
     }
     return braco;
   }
@@ -251,7 +251,7 @@ public class GuitarraServiceImp implements GuitarraService {
     if (id == null) return null;
     Captador captador = captadorRepository.findById(id);
     if (captador == null) {
-      throw new ValidationException("idCaptador", "O captador com o id " + id + " não foi encontrado.");
+      throw ValidationException.of("idCaptador", "O captador com o id " + id + " não foi encontrado.");
     }
     return captador;
   }
@@ -260,7 +260,7 @@ public class GuitarraServiceImp implements GuitarraService {
     if (id == null) return null;
     Cor cor = corRepository.findById(id);
     if (cor == null) {
-      throw new ValidationException("idCor", "A cor com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("idCor", "A cor com o id " + id + " não foi encontrada.");
     }
     return cor;
   }
@@ -269,7 +269,7 @@ public class GuitarraServiceImp implements GuitarraService {
     if (id == null) return null;
     Ponte ponte = ponteRepository.findById(id);
     if (ponte == null) {
-      throw new ValidationException("idPonte", "A ponte com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("idPonte", "A ponte com o id " + id + " não foi encontrada.");
     }
     return ponte;
   }
@@ -278,7 +278,7 @@ public class GuitarraServiceImp implements GuitarraService {
     if (id == null) return null;
     Tarracha tarracha = tarrachaRepository.findById(id);
     if (tarracha == null) {
-      throw new ValidationException("idTarracha", "A tarracha com o id " + id + " não foi encontrada.");
+      throw ValidationException.of("idTarracha", "A tarracha com o id " + id + " não foi encontrada.");
     }
     return tarracha;
   }

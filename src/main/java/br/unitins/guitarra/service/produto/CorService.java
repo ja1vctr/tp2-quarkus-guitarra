@@ -4,9 +4,10 @@ import java.util.List;
 
 import br.unitins.guitarra.dto.produto.request.CorRequest;
 import br.unitins.guitarra.dto.produto.response.CorResponse;
+import jakarta.validation.Valid;
 
 public interface CorService {
-    CorResponse create(CorRequest request);
+    CorResponse create(@Valid CorRequest request);
     void update(Long id, CorRequest request);
     void delete(Long id);
     List<CorResponse> findAll(int page, int pageSize);

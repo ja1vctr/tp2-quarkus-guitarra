@@ -1,7 +1,6 @@
 package br.unitins.guitarra.service.produto;
 
 import java.util.List;
-import java.util.Set;
 
 import br.unitins.guitarra.dto.produto.request.BracoRequest;
 import br.unitins.guitarra.dto.produto.response.BracoResponse;
@@ -13,8 +12,6 @@ import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
@@ -33,10 +30,6 @@ public class BracoServiceImp implements BracoService {
     @Override
     @Transactional
     public BracoResponse create(BracoRequest request) {
-        Set<ConstraintViolation<BracoRequest>> violations = validator.validate(request);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
 
         Braco newBraco = new Braco();
         newBraco.setFormato(request.formato());
@@ -51,11 +44,6 @@ public class BracoServiceImp implements BracoService {
     @Override
     @Transactional
     public void update(Long id, BracoRequest request) {
-        Set<ConstraintViolation<BracoRequest>> violations = validator.validate(request);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
-
         Braco braco = repository.findById(id);
         if (braco == null) throw new NotFoundException("Braço não encontrado pelo ID " + id);
 
@@ -68,13 +56,13 @@ public class BracoServiceImp implements BracoService {
     @Transactional
     public void delete(Long id) {
         if (repository.findById(id) == null) {
-            throw new ValidationException("id", "O braço com o id " + id + " não foi encontrado.");
+            throw ValidationException.of("id", "O braço com o id " + id + " não foi encontrado.");
         }
 
         Braco braco = repository.findById(id);
 
         if (guitarraRepository.count("braco", braco) > 0) {
-            throw new ValidationException("braco", "Este braço está em uso e não pode ser excluído.");
+            throw ValidationException.of("braco", "Este braço está em uso e não pode ser excluído.");
         }
 
         repository.deleteById(id);

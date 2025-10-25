@@ -6,7 +6,8 @@ import jakarta.validation.constraints.NotNull;
 public record BracoRequest(
     @NotBlank(message = "O campo formato não pode ser nulo.")
     String formato,
+    @NotBlank(message = "O campo madeira não pode ser nulo.")
     String madeira,
-    @NotNull(message = "O campo numeroDeTrastes não pode ser nulo.")
+    @NotNull(message = "O campo numero de trastes não pode ser nulo.")
     Integer numeroDeTrastes
 ) {}

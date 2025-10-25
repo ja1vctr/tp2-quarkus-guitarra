@@ -37,7 +37,7 @@ public class CorServiceImp implements CorService {
         }
 
         if (repository.findCodigoHexadecimal(request.codigoHexadecimal()) != null) {
-            throw new ValidationException("codigoHexadecimal", "O código '" + request.codigoHexadecimal() + "' já existe.");
+            throw ValidationException.of("codigoHexadecimal", "O código '" + request.codigoHexadecimal() + "' já existe.");
         }
 
         Cor newCor = new Cor();
@@ -59,7 +59,7 @@ public class CorServiceImp implements CorService {
 
         Cor cor = repository.findById(id);
         if (cor == null) {
-            throw new ValidationException("id", "A cor com o id " + id + " não foi encontrada.");
+            throw ValidationException.of("id", "A cor com o id " + id + " não foi encontrada.");
         }
 
         cor.setNome(request.nome());
@@ -71,11 +71,11 @@ public class CorServiceImp implements CorService {
     public void delete(Long id) {
         Cor cor = repository.findById(id);
         if (cor == null) {
-            throw new ValidationException("id", "A cor com o id " + id + " não foi encontrada.");
+            throw ValidationException.of("id", "A cor com o id " + id + " não foi encontrada.");
         }
 
         if (guitarraRepository.count("cor", cor) > 0) {
-            throw new ValidationException("cor", "Esta cor está em uso e não pode ser excluída.");
+            throw ValidationException.of("cor", "Esta cor está em uso e não pode ser excluída.");
         }
 
         repository.deleteById(id);
@@ -90,7 +90,7 @@ public class CorServiceImp implements CorService {
     public CorResponse findById(Long id) {
         Cor cor = repository.findById(id);
        if (cor == null) {
-            throw new ValidationException("id", "A cor com o id " + id + " não foi encontrada.");
+            throw ValidationException.of("id", "A cor com o id " + id + " não foi encontrada.");
         }
         return CorResponse.valueOf(cor);
     }

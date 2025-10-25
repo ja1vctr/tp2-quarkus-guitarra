@@ -49,3 +49,15 @@ smallrye:
     sign:
       key:
         location: src/main/token/privateKey.pem
+
+# -------------------------------------------------
+# CONFIGURAÇÕES ESPECÍFICAS DE PERFIL (DEV E PROD)
+# -------------------------------------------------
+
+"%dev":
+  error:
+    base-url: http://localhost:8080
+
+"%prod":
+  error:
+    base-url: http://api.minhaapi.com.br

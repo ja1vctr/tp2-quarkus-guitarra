@@ -4,9 +4,10 @@ import java.util.List;
 
 import br.unitins.guitarra.dto.produto.request.ModeloRequest;
 import br.unitins.guitarra.dto.produto.response.ModeloResponse;
+import jakarta.validation.Valid;
 
 public interface ModeloService {
-  ModeloResponse create(ModeloRequest request);
+  ModeloResponse create(@Valid ModeloRequest request);
   void update(Long id, ModeloRequest request);
   void delete(Long id);
   List<ModeloResponse> findAll(Integer page, Integer pageSize);

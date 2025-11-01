@@ -26,9 +26,9 @@ INSERT INTO Cor (nome, codigoHexadecimal) VALUES ('Black', '#000000');
 INSERT INTO Cor (nome, codigoHexadecimal) VALUES ('Olympic White', '#FDFDFD');
 
 -- Inserindo Braços
-INSERT INTO Braco (formato, madeira, numeroDeTrastes) VALUES ('Modern C', 'Maple', 22);
-INSERT INTO Braco (formato, madeira, numeroDeTrastes) VALUES ('SlimTaper', 'Mahogany', 22);
-INSERT INTO Braco (formato, madeira, numeroDeTrastes) VALUES ('Wizard III', 'Maple', 24);
+INSERT INTO Braco (formato, madeira, numeroDeTrastes, dataDeFabricacao, descricao) VALUES ('Modern C', 'Maple', 22, '2023-01-15', 'Braço com perfil confortável e moderno, ideal para a maioria dos estilos.');
+INSERT INTO Braco (formato, madeira, numeroDeTrastes, dataDeFabricacao, descricao) VALUES ('SlimTaper', 'Mahogany', 22, '2022-11-20', 'Perfil fino e rápido, clássico da Gibson, ótimo para solos.');
+INSERT INTO Braco (formato, madeira, numeroDeTrastes, dataDeFabricacao, descricao) VALUES ('Wizard III', 'Maple', 24, '2023-05-10', 'Braço ultra-fino e plano, projetado para velocidade e técnica.');
 
 -- Inserindo Captadores
 INSERT INTO Captador (marca, modelo, posicao) VALUES ('Fender', 'V-Mod II Single-Coil', 'Braço');

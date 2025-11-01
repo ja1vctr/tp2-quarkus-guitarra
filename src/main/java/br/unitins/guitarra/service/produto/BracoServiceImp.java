@@ -1,5 +1,6 @@
 package br.unitins.guitarra.service.produto;
 
+import java.util.Date;
 import java.util.List;
 
 import br.unitins.guitarra.dto.produto.request.BracoRequest;
@@ -35,6 +36,8 @@ public class BracoServiceImp implements BracoService {
         newBraco.setFormato(request.formato());
         newBraco.setMadeira(request.madeira());
         newBraco.setNumeroDeTrastes(request.numeroDeTrastes());
+        newBraco.setDataDeFabricacao(request.dataDeFabricacao());
+        newBraco.setDescricao(request.descricao());
 
         repository.persist(newBraco);
 
@@ -50,6 +53,8 @@ public class BracoServiceImp implements BracoService {
         braco.setFormato(request.formato());
         braco.setMadeira(request.madeira());
         braco.setNumeroDeTrastes(request.numeroDeTrastes());
+        braco.setDataDeFabricacao(request.dataDeFabricacao());
+        braco.setDescricao(request.descricao());
     }
 
     @Override
@@ -94,6 +99,18 @@ public class BracoServiceImp implements BracoService {
     }
     
     @Override
+    public List<BracoResponse> findByMadeira(String madeira) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByMadeira'");
+    }
+
+    @Override
+    public List<BracoResponse> findByAno(Date dataDeFabricacao) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findByAno'");
+    }
+    
+    @Override
     public Long count() {
         return repository.count();
     }
@@ -102,4 +119,8 @@ public class BracoServiceImp implements BracoService {
     public Long count(String formato) {
         return repository.count("UPPER(formato) LIKE ?1", "%" + formato.toUpperCase() + "%");
     }
+
+
+    //-----------------------------------------------------------------------------------------------------------------------
+
 }

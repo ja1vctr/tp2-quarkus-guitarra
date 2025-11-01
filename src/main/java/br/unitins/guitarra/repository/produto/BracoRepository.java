@@ -8,6 +8,14 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class BracoRepository implements PanacheRepository<Braco> {
   public PanacheQuery<Braco> findByFormato(String formato) {
-        return find("UPPER(formato) LIKE ?1", "%" + formato.toUpperCase() + "%");
-    }
+    return find("UPPER(formato) LIKE ?1", "%" + formato.toUpperCase() + "%");
+  }
+
+  public PanacheQuery<Braco> findByMadeira(String madeira) {
+    return find("UPPER(madeira) LIKE ?1", "%" + madeira.toUpperCase() + "%");
+  }
+
+  public PanacheQuery<Braco> findByDataDeFabricacao(String dataDeFabricacao) {
+    return find("dataDeFabricacao = ?1", "%" + dataDeFabricacao + "%");
+  }
 }

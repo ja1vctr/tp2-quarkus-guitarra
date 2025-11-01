@@ -1,8 +1,9 @@
 package br.unitins.guitarra.model.produto;
 
+import java.time.LocalDate;
+
 import br.unitins.guitarra.model.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,8 +11,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Braco extends BaseEntity{
-  @NotBlank(message = "O campo formato é obrigatório" )
   private String formato;
   private String madeira;
   private Integer numeroDeTrastes;
+  private LocalDate dataDeFabricacao;
+  private String descricao;
+
 }

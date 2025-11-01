@@ -1,5 +1,6 @@
 package br.unitins.guitarra.service.produto;
 
+import java.util.Date;
 import java.util.List;
 
 import br.unitins.guitarra.dto.produto.request.BracoRequest;
@@ -13,6 +14,8 @@ public interface BracoService {
   List<BracoResponse> findAll(Integer page, Integer pageSize);
   BracoResponse findById(Long id);
   List<BracoResponse> findByFormato(String formato);
+  List<BracoResponse> findByMadeira(String madeira);
+  List<BracoResponse> findByAno(Date dataDeFabricacao);
   Long count();
   Long count(String formato);  
 }

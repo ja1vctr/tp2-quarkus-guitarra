@@ -9,6 +9,7 @@ import br.unitins.guitarra.model.produto.Cor;
 import br.unitins.guitarra.repository.produto.CorRepository;
 import br.unitins.guitarra.repository.produto.GuitarraRepository;
 import br.unitins.guitarra.validation.ValidationException;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -31,18 +32,12 @@ public class CorServiceImp implements CorService {
     @Override
     @Transactional
     public CorResponse create(CorRequest request) {
-        Set<ConstraintViolation<CorRequest>> violations = validator.validate(request);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
-
-        if (repository.findCodigoHexadecimal(request.codigoHexadecimal()) != null) {
-            throw ValidationException.of("codigoHexadecimal", "O código '" + request.codigoHexadecimal() + "' já existe.");
-        }
+        validarNome(request.nome());
+        validarCodigoExadecimal(request.codigoHexadecimal());
 
         Cor newCor = new Cor();
-        newCor.setNome(request.nome());
-        newCor.setCodigoHexadecimal(request.codigoHexadecimal());
+        newCor.setNome(request.nome());        
+        newCor.setCodigoHexadecimal(request.codigoHexadecimal().toUpperCase());
 
         repository.persist(newCor);
 
@@ -63,7 +58,7 @@ public class CorServiceImp implements CorService {
         }
 
         cor.setNome(request.nome());
-        cor.setCodigoHexadecimal(request.codigoHexadecimal());
+        cor.setCodigoHexadecimal(request.codigoHexadecimal().toUpperCase());
     }
 
     @Override
@@ -118,5 +113,19 @@ public class CorServiceImp implements CorService {
     @Override
     public long countByCodigoHexadecimal(String codigoHexadecimal) {
         return repository.findByCodigoHexadecimal(codigoHexadecimal).count();
+    }
+
+    //--------------------------------------------------------------------------------------------------------------------------
+
+    public void validarNome(String nome) {
+        PanacheQuery<Cor> query = repository.findByNome(nome);
+        if (query.firstResult() != null)
+            throw ValidationException.of("nome", "O nome " + nome + " já existe.");
+    }
+    
+    public void validarCodigoExadecimal(String codigoHexadecimal) {
+        PanacheQuery<Cor> query = repository.findByCodigoHexadecimal(codigoHexadecimal);
+        if (query.firstResult() != null)
+            throw ValidationException.of("codigoHexadecimal", "O codigoHexadecimal " + codigoHexadecimal + " já existe.");
     }
 }

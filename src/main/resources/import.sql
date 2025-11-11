@@ -31,14 +31,14 @@ INSERT INTO Braco (formato, madeira, numeroDeTrastes, dataDeFabricacao, descrica
 INSERT INTO Braco (formato, madeira, numeroDeTrastes, dataDeFabricacao, descricao) VALUES ('Wizard III', 'Maple', 24, '2023-05-10', 'Braço ultra-fino e plano, projetado para velocidade e técnica.');
 
 -- Inserindo Captadores
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Fender', 'V-Mod II Single-Coil', 'Braço');
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Fender', 'V-Mod II Single-Coil', 'Meio');
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Fender', 'V-Mod II Single-Coil', 'Ponte');
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Gibson', 'BurstBucker 61R', 'Braço');
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Gibson', 'BurstBucker 61T', 'Ponte');
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Ibanez', 'Quantum (H)', 'Braço');
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Ibanez', 'Quantum (S)', 'Meio');
-INSERT INTO Captador (marca, modelo, posicao) VALUES ('Ibanez', 'Quantum (H)', 'Ponte');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Fender', 'V-Mod II Single-Coil', 'BRACO');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Fender', 'V-Mod II Single-Coil', 'MEIO');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Fender', 'V-Mod II Single-Coil', 'PONTE');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Gibson', 'BurstBucker 61R', 'BRACO');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Gibson', 'BurstBucker 61T', 'PONTE');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Ibanez', 'Quantum (H)', 'BRACO');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Ibanez', 'Quantum (S)', 'MEIO');
+INSERT INTO Captador (marca, modelo, posicao) VALUES ('Ibanez', 'Quantum (H)', 'PONTE');
 
 -- Inserindo Pontes
 INSERT INTO Ponte (marca, modelo) VALUES ('Fender', '2-Point Synchronized Tremolo');

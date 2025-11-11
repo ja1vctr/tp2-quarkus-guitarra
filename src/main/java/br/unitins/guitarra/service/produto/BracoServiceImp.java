@@ -1,5 +1,6 @@
 package br.unitins.guitarra.service.produto;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -31,16 +32,17 @@ public class BracoServiceImp implements BracoService {
     @Override
     @Transactional
     public BracoResponse create(BracoRequest request) {
-
+        valirdarDataDeFabricacao(request.dataDeFabricacao());
+        
         Braco newBraco = new Braco();
         newBraco.setFormato(request.formato());
         newBraco.setMadeira(request.madeira());
         newBraco.setNumeroDeTrastes(request.numeroDeTrastes());
         newBraco.setDataDeFabricacao(request.dataDeFabricacao());
         newBraco.setDescricao(request.descricao());
-
+        
         repository.persist(newBraco);
-
+        
         return BracoResponse.valueOf(newBraco);
     }
 
@@ -49,7 +51,9 @@ public class BracoServiceImp implements BracoService {
     public void update(Long id, BracoRequest request) {
         Braco braco = repository.findById(id);
         if (braco == null) throw new NotFoundException("Braço não encontrado pelo ID " + id);
-
+        
+        valirdarDataDeFabricacao(request.dataDeFabricacao());
+        
         braco.setFormato(request.formato());
         braco.setMadeira(request.madeira());
         braco.setNumeroDeTrastes(request.numeroDeTrastes());
@@ -123,4 +127,10 @@ public class BracoServiceImp implements BracoService {
 
     //-----------------------------------------------------------------------------------------------------------------------
 
-}
+    public void valirdarDataDeFabricacao (LocalDate dataDeFabricacao) {
+        LocalDate hoje = LocalDate.now();
+        if (hoje.isBefore(dataDeFabricacao)) {
+            throw ValidationException.of("dataDeFabricacao", "A data de fabricação não pode ser no futuro.");
+        }
+    }
+}    

@@ -8,5 +8,5 @@ public record CaptadorRequest(
     @NotBlank(message = "O campo modelo não pode ser nulo.")
     String modelo,
     @NotBlank(message = "O campo posicao não pode ser nulo.")
-    String posicao
+    Integer posicao
 ) {}

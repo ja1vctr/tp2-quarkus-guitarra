@@ -5,6 +5,7 @@ import java.util.List;
 import br.unitins.guitarra.dto.produto.request.CaptadorRequest;
 import br.unitins.guitarra.dto.produto.response.CaptadorResponse;
 import br.unitins.guitarra.model.produto.Captador;
+import br.unitins.guitarra.model.produto.PosicaoCaptador;
 import br.unitins.guitarra.repository.produto.CaptadorRepository;
 import br.unitins.guitarra.repository.produto.GuitarraRepository;
 import br.unitins.guitarra.validation.ValidationException;
@@ -33,7 +34,7 @@ public class CaptadorServiceImp implements CaptadorService {
         Captador newCaptador = new Captador();
         newCaptador.setMarca(request.marca());
         newCaptador.setModelo(request.modelo());
-        newCaptador.setPosicao(request.posicao());
+        newCaptador.setPosicao(PosicaoCaptador.valueOf(request.posicao()));
 
         repository.persist(newCaptador);
 
@@ -49,7 +50,7 @@ public class CaptadorServiceImp implements CaptadorService {
 
         captador.setMarca(request.marca());
         captador.setModelo(request.modelo());
-        captador.setPosicao(request.posicao());
+        captador.setPosicao(PosicaoCaptador.valueOf(request.posicao()));
     }
 
     @Override

@@ -1,12 +1,13 @@
 package br.unitins.guitarra.dto.produto.response;
 
 import br.unitins.guitarra.model.produto.Captador;
+import br.unitins.guitarra.model.produto.PosicaoCaptador;
 
 public record CaptadorResponse(
     Long id,
     String marca,
     String modelo,
-    String posicao
+    PosicaoCaptador posicao
 ) {
     public static CaptadorResponse valueOf (Captador captador) {
         if (captador == null) return null;

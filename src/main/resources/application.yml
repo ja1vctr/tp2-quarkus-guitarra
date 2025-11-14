@@ -34,6 +34,17 @@ quarkus:
         - Authorization
       access-control-max-age: 24H
       access-control-allow-credentials: true
+      
+    body:
+      uploads-directory: "uploads" # Diretório temporário para uploads
+aws:  
+  s3:
+    # endpoint-override: s3.us-east-005.backblazeb2.com
+    access-key: ${B2_ACCESS_KEY}
+    secret-key: ${B2_SECRET_KEY}
+    bucket: ${B2_BUCKET}  
+    path-style-access: true
+    public-download-url: https://f005.backblazeb2.com/file/tpii-quarkus-bucket
 
 ## Configurações do JWT
 mp:

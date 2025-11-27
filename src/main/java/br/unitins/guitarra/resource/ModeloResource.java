@@ -3,6 +3,7 @@ package br.unitins.guitarra.resource;
 import java.util.List;
 
 import br.unitins.guitarra.dto.produto.request.ModeloRequest;
+import br.unitins.guitarra.dto.produto.response.MarcaResponse;
 import br.unitins.guitarra.dto.produto.response.ModeloResponse;
 import br.unitins.guitarra.service.produto.ModeloService;
 import jakarta.inject.Inject;
@@ -75,6 +76,12 @@ public class ModeloResource {
         long count = service.countByNome(nome);
 
         return Response.ok(response).header("X-Total-Count", count).build();
+    }
+
+    @GET
+    @Path("/{id}/marcas")
+    public List<MarcaResponse> findModelos(@PathParam("id") Long id) {
+        return service.findMarcasByModelo(id);
     }
 
     @GET

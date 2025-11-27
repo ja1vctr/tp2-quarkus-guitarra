@@ -1,8 +1,13 @@
 package br.unitins.guitarra.model.produto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import br.unitins.guitarra.model.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +15,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Modelo extends BaseEntity {
-  @NotBlank(message = "O campo nome é obrigatório" )
   private String nome;
+
+  @ManyToMany
+  @JoinTable(
+    name = "marca_modelo",
+    joinColumns = @JoinColumn(name = "modelo_id"),
+    inverseJoinColumns = @JoinColumn(name = "marca_id")
+  )
+  private List<Marca> listaMarcas = new ArrayList<Marca>();
 }

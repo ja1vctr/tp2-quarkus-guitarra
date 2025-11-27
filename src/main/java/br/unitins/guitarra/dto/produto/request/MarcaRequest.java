@@ -9,6 +9,5 @@ public record MarcaRequest(
     String nome,
     @NotBlank(message = "O campo cnpj não pode ser nulo.")
     String cnpj,
-    // @NotBlank(message = "A lista de modelos não pode ser nula.")
-    List<Long> listaModelos
+    List<Long> listaIdModelos
 ) {}

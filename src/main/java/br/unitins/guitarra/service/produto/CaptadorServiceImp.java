@@ -29,8 +29,6 @@ public class CaptadorServiceImp implements CaptadorService {
     @Override
     @Transactional
     public CaptadorResponse create(CaptadorRequest request) {
-        
-
         Captador newCaptador = new Captador();
         newCaptador.setMarca(request.marca());
         newCaptador.setModelo(request.modelo());

@@ -5,9 +5,11 @@ import java.util.Set;
 
 import br.unitins.guitarra.dto.produto.request.MarcaRequest;
 import br.unitins.guitarra.dto.produto.response.MarcaResponse;
+import br.unitins.guitarra.dto.produto.response.ModeloResponse;
 import br.unitins.guitarra.model.produto.Marca;
 import br.unitins.guitarra.repository.produto.GuitarraRepository;
 import br.unitins.guitarra.repository.produto.MarcaRepository;
+import br.unitins.guitarra.repository.produto.ModeloRepository;
 import br.unitins.guitarra.validation.ValidationException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,16 +29,14 @@ public class MarcaServiceImp implements MarcaService {
     GuitarraRepository guitarraRepository;
 
     @Inject
+    ModeloRepository modeloRepository;
+
+    @Inject
     Validator validator;
 
     @Override
     @Transactional
     public MarcaResponse create(MarcaRequest request) {
-        Set<ConstraintViolation<MarcaRequest>> violations = validator.validate(request);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
-
         if (repository.findByCnpj(request.cnpj()) != null) {
             throw ValidationException.of("cnpj", "O CNPJ '" + request.cnpj() + "' já existe.");
         }
@@ -45,7 +45,7 @@ public class MarcaServiceImp implements MarcaService {
         newMarca.setNome(request.nome());
         if(request.cnpj().length() != 14)
             throw ValidationException.of("cnpj", "O CNPJ deve conter 14 caracteres.");
-        newMarca.setCnpj(request.cnpj());
+        newMarca.setCnpj(request.cnpj());          
 
         repository.persist(newMarca);
 
@@ -112,6 +112,20 @@ public class MarcaServiceImp implements MarcaService {
     public List<MarcaResponse> findByNome(String nome) {
         return repository.findByNome(nome).stream().map(MarcaResponse::valueOf).toList();
     }
+    
+    @Override
+    public List<ModeloResponse> findModelosByMarca(Long idMarca) {
+        Marca marca = repository.findById(idMarca);
+
+        if(marca == null) {
+            throw ValidationException.of("idMarca", "A marca com o id " + idMarca + " não foi encontrada.");
+        }
+
+        return marca.getListaModelos()
+            .stream()
+            .map(ModeloResponse::valueOf)
+            .toList();
+    }
 
     @Override
     public long count() {
@@ -122,4 +136,5 @@ public class MarcaServiceImp implements MarcaService {
     public long countByNome(String nome) {
         return repository.findByNome(nome).count();
     }
+
 }

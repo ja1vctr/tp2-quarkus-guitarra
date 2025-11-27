@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.unitins.guitarra.dto.produto.request.MarcaRequest;
 import br.unitins.guitarra.dto.produto.response.MarcaResponse;
+import br.unitins.guitarra.dto.produto.response.ModeloResponse;
 import jakarta.validation.Valid;
 
 public interface MarcaService {
@@ -13,6 +14,7 @@ public interface MarcaService {
     List<MarcaResponse> findAll(Integer page, Integer pageSize);
     MarcaResponse findById(Long id);
     List<MarcaResponse> findByNome(String nome);
+    List<ModeloResponse> findModelosByMarca(Long idMarca);
     long count();
     long countByNome(String nome);
 }

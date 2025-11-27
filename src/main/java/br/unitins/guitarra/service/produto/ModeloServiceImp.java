@@ -1,20 +1,20 @@
 package br.unitins.guitarra.service.produto;
 
 import java.util.List;
-import java.util.Set;
 
 import br.unitins.guitarra.dto.produto.request.ModeloRequest;
+import br.unitins.guitarra.dto.produto.response.MarcaResponse;
 import br.unitins.guitarra.dto.produto.response.ModeloResponse;
+import br.unitins.guitarra.model.produto.Marca;
 import br.unitins.guitarra.model.produto.Modelo;
 import br.unitins.guitarra.repository.produto.GuitarraRepository;
+import br.unitins.guitarra.repository.produto.MarcaRepository;
 import br.unitins.guitarra.repository.produto.ModeloRepository;
 import br.unitins.guitarra.validation.ValidationException;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 
 @ApplicationScoped
@@ -27,37 +27,35 @@ public class ModeloServiceImp implements ModeloService {
   GuitarraRepository guitarraRepository;
 
   @Inject
+  MarcaRepository marcaRepository;
+
+  @Inject
   Validator validator;
 
   @Override
   @Transactional
   public ModeloResponse create(ModeloRequest request) {
-      Set<ConstraintViolation<ModeloRequest>> violations = validator.validate(request);
-      if (!violations.isEmpty()) {
-          throw new ConstraintViolationException(violations);
-      }
-      Modelo newModelo = new Modelo();
-      newModelo.setNome(request.nome());
+    Modelo newModelo = new Modelo();
+    newModelo.setNome(request.nome());
 
-      repository.persist(newModelo);
+    List<Marca> marcas = loadMarcas(request.idMarcas());
+    newModelo.setListaMarcas(marcas);
+                   
+    repository.persist(newModelo);
 
-      return ModeloResponse.valueOf(newModelo);
+    return ModeloResponse.valueOf(newModelo);
   }
 
   @Override
   @Transactional
   public void update(Long id, ModeloRequest request) {
-      Set<ConstraintViolation<ModeloRequest>> violations = validator.validate(request);
-      if (!violations.isEmpty()) {
-          throw new ConstraintViolationException(violations);
-      }
-
       Modelo modelo = repository.findById(id);
       if (modelo == null) {
           throw ValidationException.of("id", "O modelo com o id " + id + " não foi encontrada.");
       }
 
-      modelo.setNome(request.nome());
+    List<Marca> marcas = loadMarcas(request.idMarcas());
+    modelo.setListaMarcas(marcas);                                 
   }
 
   @Override
@@ -101,6 +99,19 @@ public class ModeloServiceImp implements ModeloService {
   }
 
   @Override
+  public List<MarcaResponse> findMarcasByModelo(Long idModelo) {
+    Modelo modelo = repository.findById(idModelo);
+
+    if(modelo == null) {
+        throw ValidationException.of("idModelo", "O modelo com o id " + idModelo + " não foi encontrado.");
+    }
+    return modelo.getListaMarcas()
+            .stream()
+            .map(MarcaResponse::valueOf)
+            .toList();
+  }
+
+  @Override
   public long count() {
       return repository.count();
   }
@@ -109,4 +120,24 @@ public class ModeloServiceImp implements ModeloService {
   public long countByNome(String nome) {
       return repository.findByNome(nome).count();
   }
+
+  private List<Marca> loadMarcas(List<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+        return List.of();
+    }
+
+    return ids.stream()
+        .map(id -> {
+            Marca marca = marcaRepository.findById(id);
+            if (marca == null) {
+                throw ValidationException.of(
+                    "idMarcas",
+                    "A marca com id " + id + " não existe."
+                );
+            }
+            return marca;
+        })
+        .toList();
+}
+
 }

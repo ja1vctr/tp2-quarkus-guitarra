@@ -20,9 +20,6 @@ public record GuitarraRequest(
   // Atributos de Guitarra
   Integer anoFabricacao,
   String madeira,
-  Double peso,
-  String assinatura,
-  Boolean blindagemEletronica,
   @NotNull(message = "O campo numeroDeCordas não pode ser nulo.")
   Integer numeroDeCordas,
 

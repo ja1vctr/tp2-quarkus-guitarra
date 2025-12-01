@@ -49,10 +49,12 @@ public class ModeloServiceImp implements ModeloService {
   @Override
   @Transactional
   public void update(Long id, ModeloRequest request) {
-      Modelo modelo = repository.findById(id);
-      if (modelo == null) {
-          throw ValidationException.of("id", "O modelo com o id " + id + " não foi encontrada.");
-      }
+    Modelo modelo = repository.findById(id);
+    if (modelo == null) {
+        throw ValidationException.of("id", "O modelo com o id " + id + " não foi encontrada.");
+    }
+
+    modelo.setNome(request.nome());
 
     List<Marca> marcas = loadMarcas(request.idMarcas());
     modelo.setListaMarcas(marcas);                                 
@@ -109,35 +111,42 @@ public class ModeloServiceImp implements ModeloService {
             .stream()
             .map(MarcaResponse::valueOf)
             .toList();
-  }
-
-  @Override
-  public long count() {
-      return repository.count();
-  }
-
-  @Override
-  public long countByNome(String nome) {
-      return repository.findByNome(nome).count();
-  }
-
-  private List<Marca> loadMarcas(List<Long> ids) {
-    if (ids == null || ids.isEmpty()) {
-        return List.of();
+        }
+        
+        
+        @Override
+        public List<MarcaResponse> addListMarcasByModelo(Long idModelo) {
+          // TODO Auto-generated method stub
+          throw new UnsupportedOperationException("Unimplemented method 'addListMarcasByModelo'");
+        }
+        
+    @Override
+    public long count() {
+        return repository.count();
     }
 
-    return ids.stream()
-        .map(id -> {
-            Marca marca = marcaRepository.findById(id);
-            if (marca == null) {
-                throw ValidationException.of(
-                    "idMarcas",
-                    "A marca com id " + id + " não existe."
-                );
-            }
-            return marca;
-        })
-        .toList();
-}
+    @Override
+    public long countByNome(String nome) {
+        return repository.findByNome(nome).count();
+    }
+
+    private List<Marca> loadMarcas(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+
+        return ids.stream()
+            .map(id -> {
+                Marca marca = marcaRepository.findById(id);
+                if (marca == null) {
+                    throw ValidationException.of(
+                        "idMarcas",
+                        "A marca com id " + id + " não existe."
+                    );
+                }
+                return marca;
+            }).toList();
+    }
+
 
 }

@@ -88,11 +88,8 @@ public class GuitarraServiceImp implements GuitarraService {
     newGuitarra.setStatus(request.status());
     // Atributos de Guitarra
     newGuitarra.setAnoFabricacao(request.anoFabricacao());
-    newGuitarra.setAssinatura(request.assinatura());
-    newGuitarra.setBlindagemEletronica(request.blindagemEletronica());
     newGuitarra.setMadeira(request.madeira());
     newGuitarra.setNumeroDeCordas(request.numeroDeCordas());
-    newGuitarra.setPeso(request.peso());
     // Relacionamentos
     newGuitarra.setBraco(braco);
     newGuitarra.setCaptadorBraco(captadorBraco);
@@ -141,11 +138,8 @@ public class GuitarraServiceImp implements GuitarraService {
     guitarra.setStatus(request.status());
     // Atributos de Guitarra
     guitarra.setAnoFabricacao(request.anoFabricacao());
-    guitarra.setAssinatura(request.assinatura());
-    guitarra.setBlindagemEletronica(request.blindagemEletronica());
     guitarra.setMadeira(request.madeira());
     guitarra.setNumeroDeCordas(request.numeroDeCordas());
-    guitarra.setPeso(request.peso());
     // Relacionamentos
     guitarra.setBraco(braco);
     guitarra.setCaptadorBraco(captadorBraco);

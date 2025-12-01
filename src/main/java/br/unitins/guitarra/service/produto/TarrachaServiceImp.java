@@ -93,6 +93,8 @@ public class TarrachaServiceImp implements TarrachaService {
                       toList();
     }
 
+
+    
     @Override
     public TarrachaResponse findById(Long id) {
         Tarracha tarracha = repository.findById(id);

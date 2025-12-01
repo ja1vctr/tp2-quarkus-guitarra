@@ -69,8 +69,8 @@ public class GuitarraResource {
     }
 
     @GET
-    public Response findAll(@QueryParam("page") @DefaultValue("0") Integer page, 
-                            @QueryParam("pageSize") @DefaultValue("50") Integer pageSize) {
+    public Response findAll(@QueryParam("page") @DefaultValue("0") int page, 
+                            @QueryParam("pageSize") @DefaultValue("50") int pageSize) {
         List<GuitarraResponse> response = service.findAll(page, pageSize);
         return Response.ok(response).build();
     }

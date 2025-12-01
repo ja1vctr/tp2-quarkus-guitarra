@@ -15,6 +15,7 @@ public interface ModeloService {
   ModeloResponse findById(Long id);
   List<ModeloResponse> findByNome(String nome);
   List<MarcaResponse> findMarcasByModelo(Long idModelo);
+  List<MarcaResponse> addListMarcasByModelo(Long idModelo);
   long count();
   long countByNome(String nome);
 }

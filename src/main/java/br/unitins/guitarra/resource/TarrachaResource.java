@@ -53,8 +53,8 @@ public class TarrachaResource {
 
     @GET
     public Response findAll(
-            @QueryParam("page") @DefaultValue("0") Integer page,
-            @QueryParam("pageSize") @DefaultValue("10") Integer pageSize) {
+            @QueryParam("page") @DefaultValue("0") int page,
+            @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         
         List<TarrachaResponse> response = service.findAll(page, pageSize);
         long count = service.count();

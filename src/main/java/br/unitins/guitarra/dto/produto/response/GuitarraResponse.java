@@ -15,9 +15,6 @@ public record GuitarraResponse(
     // Atributos de Guitarra
     Integer anoFabricacao,
     String madeira,
-    Double peso,
-    String assinatura,
-    Boolean blindagemEletronica,
     Integer numeroDeCordas,
 
     // Relacionamentos
@@ -45,9 +42,6 @@ public record GuitarraResponse(
             // Atributos de Guitarra
             guitarra.getAnoFabricacao(),
             guitarra.getMadeira(),
-            guitarra.getPeso(),
-            guitarra.getAssinatura(),
-            guitarra.getBlindagemEletronica(),
             guitarra.getNumeroDeCordas(),
             // Relacionamentos
             // AvaliacaoResponse.valueOf(guitarra.getAvaliacao()),

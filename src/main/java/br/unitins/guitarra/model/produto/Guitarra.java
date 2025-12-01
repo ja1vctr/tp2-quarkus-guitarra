@@ -11,8 +11,6 @@ import lombok.Setter;
 @Entity
 public class Guitarra extends Produto{
   private Integer anoFabricacao;
-  private String assinatura;
-  private Boolean blindagemEletronica;
   @ManyToOne
   @JoinColumn(name = "id_braco")
   private Braco braco;
@@ -36,7 +34,6 @@ public class Guitarra extends Produto{
   @JoinColumn(name = "id_modelo")
   private Modelo modelo;
   private Integer numeroDeCordas;
-  private Double peso;
   @ManyToOne
   @JoinColumn(name = "id_ponte")
   private Ponte ponte;

@@ -1,10 +1,11 @@
-package br.unitins.guitarra.resource;
+package br.unitins.guitarra.resource.produto;
 
 import java.util.List;
 
-import br.unitins.guitarra.dto.produto.request.PonteRequest;
-import br.unitins.guitarra.dto.produto.response.PonteResponse;
-import br.unitins.guitarra.service.produto.PonteService;
+import br.unitins.guitarra.dto.produto.request.MarcaRequest;
+import br.unitins.guitarra.dto.produto.response.MarcaResponse;
+import br.unitins.guitarra.dto.produto.response.ModeloResponse;
+import br.unitins.guitarra.service.produto.MarcaService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -21,24 +22,24 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@Path("/pontes")
+@Path("/marcas")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class PonteResource {
+public class MarcaResource {
 
     @Inject
-    PonteService service;
+    MarcaService service;
 
     @POST
-    public Response create(PonteRequest request) {
-        PonteResponse response = service.create(request);
+    public Response create(MarcaRequest request) {
+        MarcaResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, PonteRequest request) {
+    public Response update(@PathParam("id") Long id, MarcaRequest request) {
         service.update(id, request);
         return Response.status(Status.NO_CONTENT).build();
     }
@@ -56,7 +57,7 @@ public class PonteResource {
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         
-        List<PonteResponse> response = service.findAll(page, pageSize);
+        List<MarcaResponse> response = service.findAll(page, pageSize);
         long count = service.count();
         
         return Response.ok(response).header("X-Total-Count", count).build();
@@ -69,10 +70,18 @@ public class PonteResource {
     }
 
     @GET
-    @Path("/search/modelo/{modelo}")
-    public Response findByModelo(@PathParam("modelo") String modelo) {
-        List<PonteResponse> response = service.findByModelo(modelo);
-        return Response.ok(response).build();
+    @Path("/search/nome/{nome}")
+    public Response findByNome(@PathParam("nome") String nome) {
+        List<MarcaResponse> response = service.findByNome(nome);
+        long count = service.countByNome(nome);
+
+        return Response.ok(response).header("X-Total-Count", count).build();
+    }
+
+    @GET
+    @Path("/{id}/modelos")
+    public List<ModeloResponse> findModelos(@PathParam("id") Long id) {
+        return service.findModelosByMarca(id);
     }
 
     @GET

@@ -1,10 +1,10 @@
-package br.unitins.guitarra.resource;
+package br.unitins.guitarra.resource.produto;
 
 import java.util.List;
 
-import br.unitins.guitarra.dto.produto.request.CaptadorRequest;
-import br.unitins.guitarra.dto.produto.response.CaptadorResponse;
-import br.unitins.guitarra.service.produto.CaptadorService;
+import br.unitins.guitarra.dto.produto.request.PonteRequest;
+import br.unitins.guitarra.dto.produto.response.PonteResponse;
+import br.unitins.guitarra.service.produto.PonteService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -21,24 +21,24 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@Path("/captadores")
+@Path("/pontes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class CaptadorResource {
+public class PonteResource {
 
     @Inject
-    CaptadorService service;
+    PonteService service;
 
     @POST
-    public Response create(CaptadorRequest request) {
-        CaptadorResponse response = service.create(request);
+    public Response create(PonteRequest request) {
+        PonteResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, CaptadorRequest request) {
+    public Response update(@PathParam("id") Long id, PonteRequest request) {
         service.update(id, request);
         return Response.status(Status.NO_CONTENT).build();
     }
@@ -56,7 +56,7 @@ public class CaptadorResource {
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         
-        List<CaptadorResponse> response = service.findAll(page, pageSize);
+        List<PonteResponse> response = service.findAll(page, pageSize);
         long count = service.count();
         
         return Response.ok(response).header("X-Total-Count", count).build();
@@ -71,10 +71,8 @@ public class CaptadorResource {
     @GET
     @Path("/search/modelo/{modelo}")
     public Response findByModelo(@PathParam("modelo") String modelo) {
-        List<CaptadorResponse> response = service.findByModelo(modelo);
-        long count = service.countByModelo(modelo);
-
-        return Response.ok(response).header("X-Total-Count", count).build();
+        List<PonteResponse> response = service.findByModelo(modelo);
+        return Response.ok(response).build();
     }
 
     @GET

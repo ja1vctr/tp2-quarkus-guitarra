@@ -1,10 +1,10 @@
-package br.unitins.guitarra.resource;
+package br.unitins.guitarra.resource.produto;
 
 import java.util.List;
 
-import br.unitins.guitarra.dto.produto.request.CorRequest;
-import br.unitins.guitarra.dto.produto.response.CorResponse;
-import br.unitins.guitarra.service.produto.CorService;
+import br.unitins.guitarra.dto.produto.request.BracoRequest;
+import br.unitins.guitarra.dto.produto.response.BracoResponse;
+import br.unitins.guitarra.service.produto.BracoService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -21,24 +21,24 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@Path("/cores")
+@Path("/bracos")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class CorResource {
+public class BracoResource {
 
     @Inject
-    CorService service;
+    BracoService service;
 
     @POST
-    public Response create(CorRequest request) {
-        CorResponse response = service.create(request);
+    public Response create(BracoRequest request) {
+        BracoResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, CorRequest request) {
+    public Response update(@PathParam("id") Long id, BracoRequest request) {
         service.update(id, request);
         return Response.status(Status.NO_CONTENT).build();
     }
@@ -56,7 +56,7 @@ public class CorResource {
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         
-        List<CorResponse> response = service.findAll(page, pageSize);
+        List<BracoResponse> response = service.findAll(page, pageSize);
         long count = service.count();
         
         return Response.ok(response).header("X-Total-Count", count).build();
@@ -69,19 +69,10 @@ public class CorResource {
     }
 
     @GET
-    @Path("/search/nome/{nome}")
-    public Response findByNome(@PathParam("nome") String nome) {
-        List<CorResponse> response = service.findByNome(nome);
-        long count = service.countByNome(nome);
-
-        return Response.ok(response).header("X-Total-Count", count).build();
-    }
-
-    @GET
-    @Path("/search/codigo/{codigo}")
-    public Response findByCodigoHexadecimal(@PathParam("codigo") String codigo) {
-        List<CorResponse> response = service.findByNome(codigo);
-        long count = service.countByCodigoHexadecimal(codigo);
+    @Path("/search/formato/{formato}")
+    public Response findByFormato(@PathParam("formato") String formato) {
+        List<BracoResponse> response = service.findByFormato(formato);
+        long count = service.count(formato);
 
         return Response.ok(response).header("X-Total-Count", count).build();
     }

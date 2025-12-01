@@ -30,8 +30,8 @@ public class AuthResource {
     @Produces(MediaType.TEXT_PLAIN)
     public Response login (AuthRequest authRequest){
         String hashSenha = hashService.getHashSenha(authRequest.senha());
-        Usuario usuario = usuarioService.findByEmailAndSenha(authRequest.email(), hashSenha);
-        
+        Usuario usuario  = usuarioService.findByEmailAndSenha(authRequest.email(), hashSenha);
+
         if(usuario == null)
             return Response.status(Response.Status.NO_CONTENT).build();
         

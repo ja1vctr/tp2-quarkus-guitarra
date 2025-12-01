@@ -1,10 +1,10 @@
-package br.unitins.guitarra.resource;
+package br.unitins.guitarra.resource.produto;
 
 import java.util.List;
 
-import br.unitins.guitarra.dto.produto.request.BracoRequest;
-import br.unitins.guitarra.dto.produto.response.BracoResponse;
-import br.unitins.guitarra.service.produto.BracoService;
+import br.unitins.guitarra.dto.produto.request.TarrachaRequest;
+import br.unitins.guitarra.dto.produto.response.TarrachaResponse;
+import br.unitins.guitarra.service.produto.TarrachaService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
@@ -21,24 +21,24 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
-@Path("/bracos")
+@Path("/tarrachas")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class BracoResource {
+public class TarrachaResource {
 
     @Inject
-    BracoService service;
+    TarrachaService service;
 
     @POST
-    public Response create(BracoRequest request) {
-        BracoResponse response = service.create(request);
+    public Response create(TarrachaRequest request) {
+        TarrachaResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, BracoRequest request) {
+    public Response update(@PathParam("id") Long id, TarrachaRequest request) {
         service.update(id, request);
         return Response.status(Status.NO_CONTENT).build();
     }
@@ -56,7 +56,7 @@ public class BracoResource {
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         
-        List<BracoResponse> response = service.findAll(page, pageSize);
+        List<TarrachaResponse> response = service.findAll(page, pageSize);
         long count = service.count();
         
         return Response.ok(response).header("X-Total-Count", count).build();
@@ -69,11 +69,10 @@ public class BracoResource {
     }
 
     @GET
-    @Path("/search/formato/{formato}")
-    public Response findByFormato(@PathParam("formato") String formato) {
-        List<BracoResponse> response = service.findByFormato(formato);
-        long count = service.count(formato);
-
+    @Path("/search/modelo/{modelo}")
+    public Response findByModelo(@PathParam("modelo") String modelo) {
+        List<TarrachaResponse> response = service.findByModelo(modelo);
+        long count = service.countByModelo(modelo);
         return Response.ok(response).header("X-Total-Count", count).build();
     }
 

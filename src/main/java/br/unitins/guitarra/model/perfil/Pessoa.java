@@ -1,6 +1,6 @@
 package br.unitins.guitarra.model.perfil;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import br.unitins.guitarra.model.BaseEntity;
@@ -15,7 +15,7 @@ import lombok.Setter;
 @Entity
 public class Pessoa extends BaseEntity {
     private String nome;
-    private Date dataNascimento;
+    private LocalDate dataNascimento;
     private String cpf;
     @OneToMany()
     @JoinColumn(name = "id_usuario")

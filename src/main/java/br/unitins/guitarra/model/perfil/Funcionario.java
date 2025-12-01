@@ -1,6 +1,6 @@
 package br.unitins.guitarra.model.perfil;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import br.unitins.guitarra.model.BaseEntity;
 import jakarta.persistence.Entity;
@@ -15,8 +15,8 @@ import lombok.Setter;
 public class Funcionario extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "id_pessoa", unique = true)
-    private Pessoa pessoa;
-    private String cargo;
-    private Double salario;
-    private Date dataAdmissao;
+    private Pessoa    pessoa;
+    private String    cargo;
+    private Double    salario;
+    private LocalDate dataAdmissao;
 }

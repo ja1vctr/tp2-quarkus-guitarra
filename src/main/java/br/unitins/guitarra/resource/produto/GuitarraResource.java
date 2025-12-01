@@ -1,4 +1,4 @@
-package br.unitins.guitarra.resource;
+package br.unitins.guitarra.resource.produto;
 
 import java.io.InputStream;
 import java.nio.file.Files;

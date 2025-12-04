@@ -4,6 +4,8 @@ import java.util.logging.Logger;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import br.unitins.guitarra.dto.perfil.request.ClienteReduzidoRequest;
+
 import br.unitins.guitarra.service.perfil.ClienteService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,6 +14,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -43,8 +46,22 @@ public class ClienteLogadoResource {
             return Response.status(Response.Status.UNAUTHORIZED).build();
         return Response.ok(service.findByEmail(email)).build();
     }
-
+    
     @PUT
+    // @Path("/{email}")
+    @RolesAllowed({ "Cliente" })
+    @Transactional
+    public Response update(ClienteReduzidoRequest request) {
+        String email = jwt.getSubject();
+        LOG.info("Pegando o usuário logado string: " + email);
+        LOG.info("Pegando o usuário logado");
+        if(email == null)
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        service.update(email, request);
+        return Response.status(Status.NO_CONTENT).build();
+    }
+
+    @PATCH
     @Path("/alterar-senha")
     @RolesAllowed({ "Cliente" })
     @Transactional
@@ -58,7 +75,7 @@ public class ClienteLogadoResource {
         return Response.status(Status.NO_CONTENT).build();
     }
 
-    @PUT
+    @PATCH
     @Path("/alterar-email")
     @RolesAllowed({ "Cliente" })
     @Transactional

@@ -11,17 +11,18 @@ import br.unitins.guitarra.model.perfil.Cliente;
 public interface ClienteService {
   ClienteResponse create(ClienteRequest request);
   void update(long id, ClienteReduzidoRequest request);
+  void update(String email, ClienteReduzidoRequest request);
   void delete(Long id);
-  List<ClienteResponse> findAll(Integer page, Integer pageSize);
-  List<ClienteResponse> findAll();
-  Cliente findByEmailAndSenha(String email, String senha);
-  ClienteResponse findById(Long id);
-  UsuarioResponse findEmailbyId(long id);
-  List<ClienteResponse> findByNome(String nome);
-  ClienteResponse findByEmail(String email);
   void alterarSenha(String email, String novaSenha);
   void alterarEmail(String email, String novoEmail);
   void resetarSenha(Long id);
+  List<ClienteResponse> findAll(Integer page, Integer pageSize);
+  List<ClienteResponse> findAll();
+  ClienteResponse findById(Long id);
+  UsuarioResponse findEmailbyId(long id);
+  List<ClienteResponse> findByNome(String nome);
+  Cliente findByEmailAndSenha(String email, String senha);
+  ClienteResponse findByEmail(String email);
   public Long count();
   public Long count(String nome);
 }

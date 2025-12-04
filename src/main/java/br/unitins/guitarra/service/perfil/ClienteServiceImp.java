@@ -82,6 +82,18 @@ public class ClienteServiceImp implements ClienteService {
   
   @Override
   @Transactional
+  public void update(String email, ClienteReduzidoRequest request) {
+    Cliente cliente = repository.findByEmail(email);
+    cliente.setPermitirMarketing(request.permitirMarketing());
+
+    Pessoa pessoa = cliente.getPessoa();
+    pessoa.setCpf(request.cpf());
+    pessoa.setDataNascimento(request.dataNascimento());
+    pessoa.setNome(request.nome());
+  }
+
+  @Override
+  @Transactional
   public void delete(Long id) {
     validarClienteId(id);
     repository.deleteById(id);
@@ -140,6 +152,26 @@ public class ClienteServiceImp implements ClienteService {
   }
   
   @Override
+  public List<ClienteResponse> findAll(Integer page, Integer pageSize) {
+    PanacheQuery<Cliente> query = null;
+        if (page == null || pageSize == null)
+            query = repository.findAll();
+        else
+            query = repository.findAll().page(page, pageSize);
+
+        return query.list().stream().
+                      map(ClienteResponse::valueOf).
+                      toList();
+  }
+
+  @Override
+  public List<ClienteResponse> findAll() {
+    return repository.findAll().stream().
+                  map(ClienteResponse::valueOf).
+                  toList();
+  }
+
+  @Override
   public ClienteResponse findById(Long id) {
     validarClienteId(id);
     return ClienteResponse.valueOf(repository.findById(id));
@@ -165,13 +197,6 @@ public class ClienteServiceImp implements ClienteService {
   }
   
   @Override
-  public List<ClienteResponse> findAll() {
-    return repository.findAll().stream().
-                  map(ClienteResponse::valueOf).
-                  toList();
-  }
-
-  @Override
   public List<ClienteResponse> findByNome(String nome) {
     return repository.findByNome(nome).stream().
                   map(ClienteResponse::valueOf).toList();
@@ -193,19 +218,6 @@ public class ClienteServiceImp implements ClienteService {
   @Override
   public Long count(String nome) {
     return repository.count("UPPER(nome) LIKE ?1", "%" + nome.toUpperCase() + "%");
-  }
-
-  @Override
-  public List<ClienteResponse> findAll(Integer page, Integer pageSize) {
-    PanacheQuery<Cliente> query = null;
-        if (page == null || pageSize == null)
-            query = repository.findAll();
-        else
-            query = repository.findAll().page(page, pageSize);
-
-        return query.list().stream().
-                      map(ClienteResponse::valueOf).
-                      toList();
   }
 
 

@@ -70,9 +70,15 @@ public class FuncionarioResource {
     public Response findById(@PathParam("id") Long id) {
         return Response.ok(service.findById(id)).build();
     }
+
+    @GET
+    @Path("/email-funcionario/{email}")
+    public Response findByEmail(@PathParam("email") String email) {
+        return Response.ok(service.findByEmail(email)).build();
+    }
     
     @GET
-    @Path("email/{id}")
+    @Path("/email/{id}")
     public Response findEmailById(@PathParam("id") Long id) {
         return Response.ok(service.findEmailbyId(id)).build();
     }
@@ -86,26 +92,10 @@ public class FuncionarioResource {
     // --- NOVOS RECURSOS ---
     
     @PUT
-    @Path("/alterar-senha")
-    @Transactional
-    public Response alterarSenha(FuncionarioRequest request, @QueryParam("novaSenha") String novaSenha) {
-        service.alterarSenha(request, novaSenha);
-        return Response.status(Status.NO_CONTENT).build();
-    }
-
-    @PUT
     @Path("/resetar-senha/{id}")
     @Transactional
     public Response resetarSenha(@PathParam("id") Long id) {
         service.resetarSenha(id);
         return Response.status(Status.NO_CONTENT).build(); 
-    }
-
-    @PUT
-    @Path("/alterar-email")
-    @Transactional
-    public Response alterarEmail(FuncionarioRequest request, @QueryParam("novoEmail") String novoEmail) {
-        service.alterarEmail(request, novoEmail);
-        return Response.status(Status.NO_CONTENT).build();
     }
 }

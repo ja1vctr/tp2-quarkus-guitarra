@@ -11,16 +11,18 @@ import br.unitins.guitarra.model.perfil.Funcionario;
 public interface FuncionarioService {
   FuncionarioResponse create(FuncionarioRequest request);
   void update(long id, FuncionarioReduzidoRequest request);
+  void update(String email, FuncionarioReduzidoRequest request);
   void delete(Long id);
+  void alterarSenha(String email, String novaSenha);
+  void alterarEmail(String email, String novoEmail);
+  void resetarSenha(Long id);
   List<FuncionarioResponse> findAll(Integer page, Integer pageSize);
   List<FuncionarioResponse> findAll();
-  Funcionario findByEmailAndSenha(String email, String senha);
   FuncionarioResponse findById(Long id);
   UsuarioResponse findEmailbyId(long id);
   List<FuncionarioResponse> findByNome(String nome);
-  void alterarSenha(FuncionarioRequest request, String novaSenha);
-  void alterarEmail(FuncionarioRequest request, String novoEmail);
-  void resetarSenha(Long id);
+  Funcionario findByEmailAndSenha(String email, String senha);
+  FuncionarioResponse findByEmail(String email);
   public Long count();
   public Long count(String nome);
 }

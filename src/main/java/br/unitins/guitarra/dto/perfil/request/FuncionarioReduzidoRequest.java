@@ -1,14 +1,14 @@
 package br.unitins.guitarra.dto.perfil.request;
 
-import javax.xml.crypto.Data;
+import java.time.LocalDate;
 
 public record FuncionarioReduzidoRequest(
   // Funcionario
-  Data   dataAdmissao,
-  String cargo,
-  Double salario,
+  LocalDate dataAdmissao,
+  String    cargo,
+  Double    salario,
   // Pessoa
-  String cpf,
-  String nome,
-  Data   dataNascimento
+  String    cpf,
+  String    nome,
+  LocalDate dataNascimento
 ) {}

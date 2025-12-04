@@ -1,13 +1,13 @@
 package br.unitins.guitarra.dto.perfil.request;
 
-import javax.xml.crypto.Data;
+import java.time.LocalDate;
 
 public record ClienteReduzidoRequest(
   //cliente
-  long id,
-  Boolean permitirMarketing,
+  Boolean   permitirMarketing,
+  
   //pessoa  
-  String cpf,
-  Data   dataNascimento,
-  String nome
+  String    cpf,
+  LocalDate dataNascimento,
+  String    nome
 ) {}

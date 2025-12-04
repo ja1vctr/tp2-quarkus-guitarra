@@ -4,7 +4,6 @@ import java.time.LocalDate;
 
 public record ClienteRequest(
   //cliente
-  long id,
   Boolean permitirMarketing,
   //pessoa  
   String cpf,

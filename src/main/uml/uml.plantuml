@@ -163,7 +163,7 @@ ItemPedido "*" --> "1" Produto
 
 Pedido "1" --> "*" ItemPedido
 
-Pessoa --> "1" Usuario
+Usuario <-- "1" Pessoa 
 Pessoa --> Genero
 Pessoa "1" o--> "*" Endereco
 

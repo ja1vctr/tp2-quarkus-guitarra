@@ -2,10 +2,10 @@ package br.unitins.guitarra.resource.perfil;
 
 import java.util.List;
 
-import br.unitins.guitarra.dto.perfil.request.ClienteReduzidoRequest;
-import br.unitins.guitarra.dto.perfil.request.ClienteRequest;
-import br.unitins.guitarra.dto.perfil.response.ClienteResponse;
-import br.unitins.guitarra.service.perfil.ClienteService;
+import br.unitins.guitarra.dto.perfil.request.FuncionarioReduzidoRequest;
+import br.unitins.guitarra.dto.perfil.request.FuncionarioRequest;
+import br.unitins.guitarra.dto.perfil.response.FuncionarioResponse;
+import br.unitins.guitarra.service.perfil.FuncionarioService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,24 +24,24 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 @ApplicationScoped
-@Path("/clientes")
+@Path("/funcionarios")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class ClienteResource {
+public class FuncionarioResource {
     @Inject
-    ClienteService service;
+    FuncionarioService service;
 
     @POST
-    public Response create(ClienteRequest request) {
-        // Assumindo que o service.create retorna ClienteResponse
-        ClienteResponse response = service.create(request);
+    public Response create(FuncionarioRequest request) {
+        // Assumindo que o service.create retorna FuncionarioResponse
+        FuncionarioResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, ClienteReduzidoRequest request) {
+    public Response update(@PathParam("id") Long id, FuncionarioReduzidoRequest request) {
         service.update(id, request);
         return Response.status(Status.NO_CONTENT).build(); 
     }
@@ -59,7 +59,7 @@ public class ClienteResource {
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         
-        List<ClienteResponse> response = service.findAll(page, pageSize);
+        List<FuncionarioResponse> response = service.findAll(page, pageSize);
         long count = service.count();
         
         return Response.ok(response).header("X-Total-Count", count).build();
@@ -70,15 +70,9 @@ public class ClienteResource {
     public Response findById(@PathParam("id") Long id) {
         return Response.ok(service.findById(id)).build();
     }
-
-    @GET
-    @Path("/email-cliente/{email}")
-    public Response findByEmail(@PathParam("email") String email) {
-        return Response.ok(service.findByEmail(email)).build();
-    }
     
     @GET
-    @Path("/email/{id}")
+    @Path("email/{id}")
     public Response findEmailById(@PathParam("id") Long id) {
         return Response.ok(service.findEmailbyId(id)).build();
     }
@@ -92,10 +86,26 @@ public class ClienteResource {
     // --- NOVOS RECURSOS ---
     
     @PUT
+    @Path("/alterar-senha")
+    @Transactional
+    public Response alterarSenha(FuncionarioRequest request, @QueryParam("novaSenha") String novaSenha) {
+        service.alterarSenha(request, novaSenha);
+        return Response.status(Status.NO_CONTENT).build();
+    }
+
+    @PUT
     @Path("/resetar-senha/{id}")
     @Transactional
     public Response resetarSenha(@PathParam("id") Long id) {
         service.resetarSenha(id);
         return Response.status(Status.NO_CONTENT).build(); 
+    }
+
+    @PUT
+    @Path("/alterar-email")
+    @Transactional
+    public Response alterarEmail(FuncionarioRequest request, @QueryParam("novoEmail") String novoEmail) {
+        service.alterarEmail(request, novoEmail);
+        return Response.status(Status.NO_CONTENT).build();
     }
 }

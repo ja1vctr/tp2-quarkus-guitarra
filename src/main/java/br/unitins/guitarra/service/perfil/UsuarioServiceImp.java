@@ -15,7 +15,7 @@ public class UsuarioServiceImp implements UsuarioService {
   public Usuario findByEmailAndSenha(String email, String senha) {
     Usuario usuario = usuarioRepository.findByEmailAndSenha(email, senha);
     if (usuario == null)
-      throw new RuntimeException("Usuário ou senha inválidos");
+      throw ValidationException.of("email","Usuário ou senha inválidos");
     return usuario;
   }
 

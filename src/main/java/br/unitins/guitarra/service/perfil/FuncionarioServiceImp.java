@@ -2,14 +2,14 @@ package br.unitins.guitarra.service.perfil;
 
 import java.util.List;
 
-import br.unitins.guitarra.dto.perfil.request.ClienteReduzidoRequest;
-import br.unitins.guitarra.dto.perfil.request.ClienteRequest;
-import br.unitins.guitarra.dto.perfil.response.ClienteResponse;
+import br.unitins.guitarra.dto.perfil.request.FuncionarioReduzidoRequest;
+import br.unitins.guitarra.dto.perfil.request.FuncionarioRequest;
+import br.unitins.guitarra.dto.perfil.response.FuncionarioResponse;
 import br.unitins.guitarra.dto.perfil.response.UsuarioResponse;
-import br.unitins.guitarra.model.perfil.Cliente;
+import br.unitins.guitarra.model.perfil.Funcionario;
 import br.unitins.guitarra.model.perfil.Pessoa;
 import br.unitins.guitarra.model.perfil.Usuario;
-import br.unitins.guitarra.repository.perfil.ClienteRepository;
+import br.unitins.guitarra.repository.perfil.FuncionarioRepository;
 import br.unitins.guitarra.repository.perfil.PessoaRepository;
 import br.unitins.guitarra.repository.perfil.UsuarioRepository;
 import br.unitins.guitarra.service.hash.HashService;
@@ -20,9 +20,9 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class ClienteServiceImp implements ClienteService {
+public class FuncionarioServiceImp implements FuncionarioService {
   @Inject
-  ClienteRepository repository;
+  FuncionarioRepository repository;
 
   @Inject
   PessoaRepository pessoaRepository;
@@ -34,16 +34,16 @@ public class ClienteServiceImp implements ClienteService {
   HashService hashService;
 
   @Override
-  public Cliente findByEmailAndSenha(String email, String senha) {
+  public Funcionario findByEmailAndSenha(String email, String senha) {
     return repository.findByEmailAndSenha(email, senha).firstResult();
   }
 
   @Override
   @Transactional
-  public ClienteResponse create(ClienteRequest request) {
-    // Criando um novo cliente
-    Cliente cliente = new Cliente();
-    cliente.setPermitirMarketing(request.permitirMarketing());
+  public FuncionarioResponse create(FuncionarioRequest request) {
+    // Criando um novo funcionario
+    Funcionario funcionario = new Funcionario();
+    // funcionario.setPermitirMarketing(request.permitirMarketing());
 
     // Criando uma nova pessoa
     Pessoa pessoa = new Pessoa();
@@ -51,30 +51,29 @@ public class ClienteServiceImp implements ClienteService {
     pessoa.setDataNascimento(request.dataNascimento());
     pessoa.setNome(request.nome());
     pessoaRepository.persist(pessoa);
-    cliente.setPessoa(pessoa);
+    funcionario.setPessoa(pessoa);
 
     // Criando um novo usuário
     Usuario usuario = new Usuario();
     usuario.setEmail(request.email());
-    usuario.setSenha(hashService.getHashSenha(request.senha()));
-    usuario.setPessoa(pessoa);
-    usuario.setRole("Cliente");
+    // usuario.setSenha(hashService.getHashSenha(request.senha()));
+    usuario.setRole("Funcionario");
     usuarioRepository.persist(usuario);
 
     // Adicionando o usuário à lista de usuários da pessoa
     pessoa.getUsuarios().add(usuario);
 
-    repository.persist(cliente);
-    return ClienteResponse.valueOf(cliente);
+    repository.persist(funcionario);
+    return FuncionarioResponse.valueOf(funcionario);
   }
 
   @Override
   @Transactional
-  public void update(long id, ClienteReduzidoRequest request) {
-    Cliente cliente = repository.findById(id);
-    cliente.setPermitirMarketing(request.permitirMarketing());
+  public void update(long id, FuncionarioReduzidoRequest request) {
+    Funcionario funcionario = repository.findById(id);
+    // funcionario.setPermitirMarketing(request.permitirMarketing());
 
-    Pessoa pessoa = cliente.getPessoa();
+    Pessoa pessoa = funcionario.getPessoa();
     pessoa.setCpf(request.cpf());
     pessoa.setDataNascimento(request.dataNascimento());
     pessoa.setNome(request.nome());
@@ -83,35 +82,66 @@ public class ClienteServiceImp implements ClienteService {
   @Override
   @Transactional
   public void delete(Long id) {
-    validarClienteId(id);
+    validarFuncionarioId(id);
     repository.deleteById(id);
   }
 
+  
   @Override
-  public void resetarSenha(Long id) {
-    Cliente cliente = repository.findById(id);
-    if (cliente == null) {
-        throw ValidationException.of("id", "O cliente com ID " + id + " não foi encontrado.");
+  public FuncionarioResponse findById(Long id) {
+    validarFuncionarioId(id);
+    return FuncionarioResponse.valueOf(repository.findById(id));
+  }
+  
+  @Override
+  public UsuarioResponse findEmailbyId(long id) {
+    // 1. Validar e Buscar o Funcionario
+    Funcionario funcionario = repository.findById(id);
+    if (funcionario == null) {
+        throw ValidationException.of("id", "O funcionario com ID " + id + " não foi encontrado.");
     }
 
-    Usuario usuario = cliente.getPessoa().getUsuarios().stream()
-        .filter(u -> "Cliente".equals(u.getRole()))
+    String email = funcionario.getPessoa().getUsuarios().stream()
+        .filter(usuario -> "Funcionario".equals(usuario.getRole()))
         .findFirst()
-        .orElseThrow(() -> ValidationException.of("usuario", "Usuário 'Cliente' não encontrado."));
+        .map(Usuario::getEmail) 
+        .orElseThrow(() -> ValidationException.of("email", "Usuário com role 'Funcionario' não encontrado para este funcionario."));
+
+    return new UsuarioResponse(email);
+  }
+  
+  @Override
+  public void resetarSenha(Long id) {
+    Funcionario funcionario = repository.findById(id);
+    if (funcionario == null) {
+        throw ValidationException.of("id", "O funcionario com ID " + id + " não foi encontrado.");
+    }
+
+    Usuario usuario = funcionario.getPessoa().getUsuarios().stream()
+        .filter(u -> "Funcionario".equals(u.getRole()))
+        .findFirst()
+        .orElseThrow(() -> ValidationException.of("usuario", "Usuário 'Funcionario' não encontrado."));
 
     String senhaTemporaria = gerarSenhaAleatoria(6);
-
+    
+    // 4. Gera o hash da senha temporária e atualiza o usuário
     String novaHash = hashService.getHashSenha(senhaTemporaria);
     usuario.setSenha(novaHash);
   }
   
   @Override
   @Transactional
-  public void alterarSenha(String email, String novaSenha) {
-    Usuario usuario = usuarioRepository.findByEmail(email);
+  public void alterarSenha(FuncionarioRequest request, String novaSenha) {
+    Usuario usuario = usuarioRepository.findByEmail(request.email());
     
     if (usuario == null) {
         throw ValidationException.of("email", "O usuário não foi encontrado.");
+    }
+
+    String hashSenhaAtual = hashService.getHashSenha(request.senha());
+    
+    if (!usuario.getSenha().equals(hashSenhaAtual)) {
+        throw ValidationException.of("senha", "A senha atual está incorreta.");
     }
   
     if (novaSenha == null || novaSenha.trim().isEmpty()) {
@@ -124,8 +154,8 @@ public class ClienteServiceImp implements ClienteService {
   
   @Override
   @Transactional
-  public void alterarEmail(String email, String novoEmail) {
-    Usuario usuario = usuarioRepository.findByEmail(email);
+  public void alterarEmail(FuncionarioRequest request, String novoEmail) {
+    Usuario usuario = usuarioRepository.findByEmail(request.email());
     
     if (usuario == null) {
         throw ValidationException.of("email", "O usuário não foi encontrado.");
@@ -138,52 +168,6 @@ public class ClienteServiceImp implements ClienteService {
 
     usuario.setEmail(novoEmail);
   }
-  
-  @Override
-  public ClienteResponse findById(Long id) {
-    validarClienteId(id);
-    return ClienteResponse.valueOf(repository.findById(id));
-  }
-  
-  @Override
-  public UsuarioResponse findEmailbyId(long id) {
-    // 1. Validar e Buscar o Cliente
-    Cliente cliente = repository.findById(id);
-    if (cliente == null) {
-        throw ValidationException.of("id", "O cliente com ID " + id + " não foi encontrado.");
-    }
-
-    // 2. Filtrar o usuário com a role "Cliente"
-    String email = cliente.getPessoa().getUsuarios().stream()
-        .filter(usuario -> "Cliente".equals(usuario.getRole())) // Usa .equals() para comparação exata de role
-        .findFirst()
-        .map(Usuario::getEmail) // Mapeia para o email se o Optional estiver presente
-        .orElseThrow(() -> ValidationException.of("email", "Usuário com role 'Cliente' não encontrado para este cliente."));
-
-    // 3. Retorna o Response DTO (Assumindo que UsuarioResponse é um record com um campo 'email')
-    return new UsuarioResponse(email);
-  }
-  
-  @Override
-  public List<ClienteResponse> findAll() {
-    return repository.findAll().stream().
-                  map(ClienteResponse::valueOf).
-                  toList();
-  }
-
-  @Override
-  public List<ClienteResponse> findByNome(String nome) {
-    return repository.findByNome(nome).stream().
-                  map(ClienteResponse::valueOf).toList();
-  }
-
-  @Override
-  public ClienteResponse findByEmail(String email) {
-    Cliente cliente = repository.findByEmail(email);
-    if(cliente == null)
-      throw ValidationException.of("email"," cliente não encontrado");
-    return ClienteResponse.valueOf(cliente);
-  }
 
   @Override
   public Long count() {
@@ -195,22 +179,35 @@ public class ClienteServiceImp implements ClienteService {
     return repository.count("UPPER(nome) LIKE ?1", "%" + nome.toUpperCase() + "%");
   }
 
+
   @Override
-  public List<ClienteResponse> findAll(Integer page, Integer pageSize) {
-    PanacheQuery<Cliente> query = null;
+  public List<FuncionarioResponse> findAll(Integer page, Integer pageSize) {
+    PanacheQuery<Funcionario> query = null;
         if (page == null || pageSize == null)
             query = repository.findAll();
         else
             query = repository.findAll().page(page, pageSize);
 
         return query.list().stream().
-                      map(ClienteResponse::valueOf).
+                      map(FuncionarioResponse::valueOf).
                       toList();
   }
 
+  @Override
+  public List<FuncionarioResponse> findAll() {
+    return repository.findAll().stream().
+                  map(FuncionarioResponse::valueOf).
+                  toList();
+  }
+
+  @Override
+  public List<FuncionarioResponse> findByNome(String nome) {
+    return repository.findByNome(nome).stream().
+                  map(FuncionarioResponse::valueOf).toList();
+  }
 
   //---------------------Auxiliares---------------------//
-  // Adicione este método na classe ClienteServiceImp
+  // Adicione este método na classe FuncionarioServiceImp
   private String gerarSenhaAleatoria(int length) {
       return "123456";
       // String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -225,9 +222,9 @@ public class ClienteServiceImp implements ClienteService {
 
   //---------------------Validacoes---------------------//
 
-  public void validarClienteId(Long id) {
-    Cliente  cliente = repository.findById(id);
-    if (cliente == null)
+  public void validarFuncionarioId(Long id) {
+    Funcionario  funcionario = repository.findById(id);
+    if (funcionario == null)
       throw ValidationException.of("id", "ID inválido.");
   }
 

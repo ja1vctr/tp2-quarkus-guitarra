@@ -1,11 +1,12 @@
 package br.unitins.guitarra.model.perfil;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import br.unitins.guitarra.model.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +18,6 @@ public class Pessoa extends BaseEntity {
     private String nome;
     private LocalDate dataNascimento;
     private String cpf;
-    @OneToMany()
-    @JoinColumn(name = "id_usuario")
-    private List<Usuario> usuarios;
+    @OneToMany(mappedBy = "pessoa", cascade = CascadeType.ALL)
+    private List<Usuario> usuarios =  new ArrayList<>();
 }

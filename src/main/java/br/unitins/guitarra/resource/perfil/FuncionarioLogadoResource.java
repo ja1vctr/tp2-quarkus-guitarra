@@ -36,7 +36,7 @@ public class FuncionarioLogadoResource {
     private static final Logger LOG = Logger.getLogger(String.valueOf(FuncionarioLogadoResource.class));
 
     @GET
-    @RolesAllowed({ "Funcionario" })
+    @RolesAllowed({ "FUNCIONARIO" })
     public Response getFuncionarioLogado() {
         // obtendo o login pelo token jwt
         String email = jwt.getSubject();
@@ -49,7 +49,7 @@ public class FuncionarioLogadoResource {
     
     @PUT
     // @Path("/{email}")
-    @RolesAllowed({ "Funcionario" })
+    @RolesAllowed({ "FUNCIONARIO" })
     @Transactional
     public Response update(FuncionarioReduzidoRequest request) {
         String email = jwt.getSubject();
@@ -63,7 +63,7 @@ public class FuncionarioLogadoResource {
 
     @PATCH
     @Path("/alterar-senha")
-    @RolesAllowed({ "Funcionario" })
+    @RolesAllowed({ "FUNCIONARIO" })
     @Transactional
     public Response alterarSenha(@QueryParam("novaSenha") String novaSenha) {
         String email = jwt.getSubject();
@@ -77,7 +77,7 @@ public class FuncionarioLogadoResource {
 
     @PATCH
     @Path("/alterar-email")
-    @RolesAllowed({ "Funcionario" })
+    @RolesAllowed({ "FUNCIONARIO" })
     @Transactional
     public Response alterarEmail(@QueryParam("novoEmail") String novoEmail) {
         String email = jwt.getSubject();

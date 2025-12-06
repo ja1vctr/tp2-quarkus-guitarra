@@ -32,7 +32,7 @@ public record GuitarraRequest(
   Long idCor,
   Long idPonte,
   Long idMarca,
-  @NotBlank(message = "O campo modelo não pode ser nulo.")
+  @NotNull(message = "O campo modelo não pode ser nulo.")
   Long idModelo,
   Long idTarracha
 ) {}

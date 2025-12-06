@@ -41,11 +41,16 @@ public class ClienteServiceImp implements ClienteService {
   @Override
   @Transactional
   public ClienteResponse create(ClienteRequest request) {
-    // Criando um novo cliente
+    if (request == null) {
+      throw ValidationException.of("request", "Dados do cliente sao obrigatorios.");
+    }
+    if (usuarioRepository.findByEmail(request.email()) != null) {
+      throw ValidationException.of("email", "Ja existe um usuario com este e-mail.");
+    }
+
     Cliente cliente = new Cliente();
     cliente.setPermitirMarketing(request.permitirMarketing());
 
-    // Criando uma nova pessoa
     Pessoa pessoa = new Pessoa();
     pessoa.setCpf(request.cpf());
     pessoa.setDataNascimento(request.dataNascimento());
@@ -53,15 +58,13 @@ public class ClienteServiceImp implements ClienteService {
     pessoaRepository.persist(pessoa);
     cliente.setPessoa(pessoa);
 
-    // Criando um novo usuário
     Usuario usuario = new Usuario();
     usuario.setEmail(request.email());
     usuario.setSenha(hashService.getHashSenha(request.senha()));
     usuario.setPessoa(pessoa);
-    usuario.setRole("Cliente");
+    usuario.setRole("CLIENTE");
     usuarioRepository.persist(usuario);
 
-    // Adicionando o usuário à lista de usuários da pessoa
     pessoa.getUsuarios().add(usuario);
 
     repository.persist(cliente);
@@ -72,6 +75,10 @@ public class ClienteServiceImp implements ClienteService {
   @Transactional
   public void update(long id, ClienteReduzidoRequest request) {
     Cliente cliente = repository.findById(id);
+    if (cliente == null) {
+      throw ValidationException.of("id", "Cliente nao encontrado.");
+    }
+
     cliente.setPermitirMarketing(request.permitirMarketing());
 
     Pessoa pessoa = cliente.getPessoa();
@@ -84,6 +91,10 @@ public class ClienteServiceImp implements ClienteService {
   @Transactional
   public void update(String email, ClienteReduzidoRequest request) {
     Cliente cliente = repository.findByEmail(email);
+    if (cliente == null) {
+      throw ValidationException.of("email", "Cliente nao encontrado.");
+    }
+
     cliente.setPermitirMarketing(request.permitirMarketing());
 
     Pessoa pessoa = cliente.getPessoa();
@@ -100,19 +111,19 @@ public class ClienteServiceImp implements ClienteService {
   }
 
   @Override
+  @Transactional
   public void resetarSenha(Long id) {
     Cliente cliente = repository.findById(id);
     if (cliente == null) {
-        throw ValidationException.of("id", "O cliente com ID " + id + " não foi encontrado.");
+        throw ValidationException.of("id", "O cliente com ID " + id + " nao foi encontrado.");
     }
 
     Usuario usuario = cliente.getPessoa().getUsuarios().stream()
-        .filter(u -> "Cliente".equals(u.getRole()))
+        .filter(u -> "CLIENTE".equals(u.getRole()))
         .findFirst()
-        .orElseThrow(() -> ValidationException.of("usuario", "Usuário 'Cliente' não encontrado."));
+        .orElseThrow(() -> ValidationException.of("usuario", "Usuario 'Cliente' nao encontrado."));
 
     String senhaTemporaria = gerarSenhaAleatoria(6);
-
     String novaHash = hashService.getHashSenha(senhaTemporaria);
     usuario.setSenha(novaHash);
   }
@@ -123,11 +134,11 @@ public class ClienteServiceImp implements ClienteService {
     Usuario usuario = usuarioRepository.findByEmail(email);
     
     if (usuario == null) {
-        throw ValidationException.of("email", "O usuário não foi encontrado.");
+        throw ValidationException.of("email", "O usuario nao foi encontrado.");
     }
   
     if (novaSenha == null || novaSenha.trim().isEmpty()) {
-         throw ValidationException.of("novaSenha", "A nova senha não pode ser vazia.");
+         throw ValidationException.of("novaSenha", "A nova senha nao pode ser vazia.");
     }
     
     String novaHash = hashService.getHashSenha(novaSenha);
@@ -140,12 +151,12 @@ public class ClienteServiceImp implements ClienteService {
     Usuario usuario = usuarioRepository.findByEmail(email);
     
     if (usuario == null) {
-        throw ValidationException.of("email", "O usuário não foi encontrado.");
+        throw ValidationException.of("email", "O usuario nao foi encontrado.");
     }
     
     Usuario usuarioExistente = usuarioRepository.findByEmail(novoEmail);
     if (usuarioExistente != null && usuarioExistente.getId() != usuario.getId()) {
-        throw ValidationException.of("novoEmail", "Este novo e-mail já está cadastrado.");
+        throw ValidationException.of("novoEmail", "Este novo e-mail ja esta cadastrado.");
     }
 
     usuario.setEmail(novoEmail);
@@ -154,59 +165,63 @@ public class ClienteServiceImp implements ClienteService {
   @Override
   public List<ClienteResponse> findAll(Integer page, Integer pageSize) {
     PanacheQuery<Cliente> query = null;
-        if (page == null || pageSize == null)
-            query = repository.findAll();
-        else
-            query = repository.findAll().page(page, pageSize);
+    if (page == null || pageSize == null) {
+      query = repository.findAll();
+    } else {
+      query = repository.findAll().page(page, pageSize);
+    }
 
-        return query.list().stream().
-                      map(ClienteResponse::valueOf).
-                      toList();
+    return query.list().stream()
+      .map(ClienteResponse::valueOf)
+      .toList();
   }
 
   @Override
   public List<ClienteResponse> findAll() {
-    return repository.findAll().stream().
-                  map(ClienteResponse::valueOf).
-                  toList();
+    return repository.findAll().stream()
+      .map(ClienteResponse::valueOf)
+      .toList();
   }
 
   @Override
   public ClienteResponse findById(Long id) {
     validarClienteId(id);
-    return ClienteResponse.valueOf(repository.findById(id));
+    Cliente cliente = repository.findById(id);
+    if (cliente == null) {
+      throw ValidationException.of("id", "Cliente nao encontrado.");
+    }
+    return ClienteResponse.valueOf(cliente);
   }
   
   @Override
   public UsuarioResponse findEmailbyId(long id) {
-    // 1. Validar e Buscar o Cliente
     Cliente cliente = repository.findById(id);
     if (cliente == null) {
-        throw ValidationException.of("id", "O cliente com ID " + id + " não foi encontrado.");
+        throw ValidationException.of("id", "O cliente com ID " + id + " nao foi encontrado.");
     }
 
-    // 2. Filtrar o usuário com a role "Cliente"
     String email = cliente.getPessoa().getUsuarios().stream()
-        .filter(usuario -> "Cliente".equals(usuario.getRole())) // Usa .equals() para comparação exata de role
+        .filter(usuario -> "CLIENTE".equals(usuario.getRole()))
         .findFirst()
-        .map(Usuario::getEmail) // Mapeia para o email se o Optional estiver presente
-        .orElseThrow(() -> ValidationException.of("email", "Usuário com role 'Cliente' não encontrado para este cliente."));
+        .map(Usuario::getEmail)
+        .orElseThrow(() -> ValidationException.of("email", "Usuario com role 'Cliente' nao encontrado para este cliente."));
 
-    // 3. Retorna o Response DTO (Assumindo que UsuarioResponse é um record com um campo 'email')
     return new UsuarioResponse(email);
   }
   
   @Override
   public List<ClienteResponse> findByNome(String nome) {
-    return repository.findByNome(nome).stream().
-                  map(ClienteResponse::valueOf).toList();
+    return repository.findByNome(nome).stream()
+      .map(ClienteResponse::valueOf)
+      .toList();
   }
 
   @Override
   public ClienteResponse findByEmail(String email) {
     Cliente cliente = repository.findByEmail(email);
-    if(cliente == null)
-      throw ValidationException.of("email"," cliente não encontrado");
+    if(cliente == null) {
+      throw ValidationException.of("email","Cliente nao encontrado");
+    }
     return ClienteResponse.valueOf(cliente);
   }
 
@@ -220,27 +235,40 @@ public class ClienteServiceImp implements ClienteService {
     return repository.count("UPPER(nome) LIKE ?1", "%" + nome.toUpperCase() + "%");
   }
 
-
-  //---------------------Auxiliares---------------------//
-  // Adicione este método na classe ClienteServiceImp
   private String gerarSenhaAleatoria(int length) {
       return "123456";
-      // String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      // StringBuilder senha = new StringBuilder();
-      // java.util.Random random = new java.util.Random();
-      
-      // for (int i = 0; i < length; i++) {
-      //     senha.append(caracteres.charAt(random.nextInt(caracteres.length())));
-      // }
-      // return senha.toString();
   }
-
-  //---------------------Validacoes---------------------//
 
   public void validarClienteId(Long id) {
-    Cliente  cliente = repository.findById(id);
-    if (cliente == null)
-      throw ValidationException.of("id", "ID inválido.");
+    Cliente cliente = repository.findById(id);
+    if (cliente == null) {
+      throw ValidationException.of("id", "ID invalido.");
+    }
   }
 
+  @Override
+  public Long findUsuarioIdByClienteId(Long id) {
+    Cliente cliente = repository.findById(id);
+    if (cliente == null) {
+      throw ValidationException.of("id", "Cliente nao encontrado.");
+    }
+    Usuario usuario = cliente.getPessoa().getUsuarios().stream()
+      .filter(u -> "CLIENTE".equals(u.getRole()))
+      .findFirst()
+      .orElseThrow(() -> ValidationException.of("usuario", "Usuario com role 'Cliente' nao encontrado."));
+    return usuario.getId();
+  }
+
+  @Override
+  public Long findUsuarioIdByEmail(String email) {
+    Cliente cliente = repository.findByEmail(email);
+    if (cliente == null) {
+      throw ValidationException.of("email", "Cliente nao encontrado.");
+    }
+    Usuario usuario = cliente.getPessoa().getUsuarios().stream()
+      .filter(u -> "CLIENTE".equals(u.getRole()))
+      .findFirst()
+      .orElseThrow(() -> ValidationException.of("usuario", "Usuario com role 'Cliente' nao encontrado."));
+    return usuario.getId();
+  }
 }

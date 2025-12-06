@@ -1,14 +1,24 @@
 package br.unitins.guitarra.resource.perfil;
 
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Set;
+
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 import br.unitins.guitarra.dto.perfil.request.FuncionarioReduzidoRequest;
 import br.unitins.guitarra.dto.perfil.request.FuncionarioRequest;
 import br.unitins.guitarra.dto.perfil.response.FuncionarioResponse;
 import br.unitins.guitarra.service.perfil.FuncionarioService;
+import br.unitins.guitarra.service.storage.UsuarioStorageService;
+import br.unitins.guitarra.validation.ValidationException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -31,9 +41,19 @@ public class FuncionarioResource {
     @Inject
     FuncionarioService service;
 
+    @Inject
+    UsuarioStorageService usuarioStorageService;
+
+    private static final Set<String> ALLOWED_TYPES = Set.of(
+            "image/png",
+            "image/jpeg",
+            "image/jpg",
+            "image/gif"
+    );
+
     @POST
-    public Response create(FuncionarioRequest request) {
-        // Assumindo que o service.create retorna FuncionarioResponse
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response create(@Valid FuncionarioRequest request) {
         FuncionarioResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
     }
@@ -41,61 +61,124 @@ public class FuncionarioResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(@PathParam("id") Long id, FuncionarioReduzidoRequest request) {
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response update(@PathParam("id") Long id, @Valid FuncionarioReduzidoRequest request) {
         service.update(id, request);
-        return Response.status(Status.NO_CONTENT).build(); 
+        return Response.status(Status.NO_CONTENT).build();
     }
 
     @DELETE
     @Path("/{id}")
     @Transactional
+    @RolesAllowed({"FUNCIONARIO"})
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.status(Status.NO_CONTENT).build();
     }
 
     @GET
+    @RolesAllowed({"FUNCIONARIO"})
     public Response findAll(
             @QueryParam("page") @DefaultValue("0") int page,
             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
-        
+
         List<FuncionarioResponse> response = service.findAll(page, pageSize);
         long count = service.count();
-        
+
         return Response.ok(response).header("X-Total-Count", count).build();
     }
 
     @GET
     @Path("/{id}")
+    @RolesAllowed({"FUNCIONARIO"})
     public Response findById(@PathParam("id") Long id) {
         return Response.ok(service.findById(id)).build();
     }
 
     @GET
     @Path("/email-funcionario/{email}")
+    @RolesAllowed({"FUNCIONARIO"})
     public Response findByEmail(@PathParam("email") String email) {
         return Response.ok(service.findByEmail(email)).build();
     }
-    
+
     @GET
     @Path("/email/{id}")
+    @RolesAllowed({"FUNCIONARIO"})
     public Response findEmailById(@PathParam("id") Long id) {
         return Response.ok(service.findEmailbyId(id)).build();
     }
 
     @GET
     @Path("/count")
+    @RolesAllowed({"FUNCIONARIO"})
     public Response count() {
         return Response.ok(service.count()).build();
     }
 
-    // --- NOVOS RECURSOS ---
-    
+    @GET
+    @Path("/search/nome/{nome}")
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response findByNome(@PathParam("nome") String nome) {
+        List<FuncionarioResponse> response = service.findByNome(nome);
+        long count = service.count(nome);
+        return Response.ok(response).header("X-Total-Count", count).build();
+    }
+
     @PUT
     @Path("/resetar-senha/{id}")
     @Transactional
+    @RolesAllowed({"FUNCIONARIO"})
     public Response resetarSenha(@PathParam("id") Long id) {
         service.resetarSenha(id);
-        return Response.status(Status.NO_CONTENT).build(); 
+        return Response.status(Status.NO_CONTENT).build();
+    }
+
+    @POST
+    @Path("/imagem/{id}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response uploadImagemFuncionario(
+            @PathParam("id") Long id,
+            @RestForm("file") FileUpload file
+    ){
+        try {
+            Long usuarioId = service.findUsuarioIdByFuncionarioId(id);
+
+            if (file == null) {
+                throw ValidationException.of("file", "Arquivo é obrigatório.");
+            }
+            if (!ALLOWED_TYPES.contains(file.contentType())) {
+                throw ValidationException.of("file", "Formato de imagem não permitido.");
+            }
+
+            if (file.size() > 10 * 1024 * 1024) {
+                throw ValidationException.of("file", "Arquivo excede 10MB.");
+            }
+
+            InputStream is = Files.newInputStream(file.uploadedFile());
+            String key = usuarioStorageService.uploadImagem(usuarioId, is);
+
+            return Response.ok("Upload realizado: " + key).build();
+
+        } catch (ValidationException e) {
+            throw e;
+        } catch (Exception e) {
+            return Response.serverError().entity("Erro: " + e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/imagem/{id}/url")
+    @Produces({"image/png", "image/jpeg", "image/jpg", "image/gif"})
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response getImageFuncionario(@PathParam("id") Long id) {
+        try {
+            Long usuarioId = service.findUsuarioIdByFuncionarioId(id);
+            InputStream url = usuarioStorageService.getPrivateImage(usuarioId);
+            return Response.ok(url).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("URL da imagem não encontrada ou erro: " + e.getMessage()).build();
+        }
     }
 }

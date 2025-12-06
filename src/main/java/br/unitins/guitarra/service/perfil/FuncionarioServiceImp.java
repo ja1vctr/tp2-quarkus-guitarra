@@ -41,13 +41,18 @@ public class FuncionarioServiceImp implements FuncionarioService {
   @Override
   @Transactional
   public FuncionarioResponse create(FuncionarioRequest request) {
-    // Criando um novo funcionario
+    if (request == null) {
+      throw ValidationException.of("request", "Dados do funcionario sao obrigatorios.");
+    }
+    if (usuarioRepository.findByEmail(request.email()) != null) {
+      throw ValidationException.of("email", "Ja existe um usuario com este e-mail.");
+    }
+
     Funcionario funcionario = new Funcionario();
     funcionario.setCargo(request.cargo());
     funcionario.setDataAdmissao(request.dataAdmissao());
     funcionario.setSalario(request.salario());
 
-    // Criando uma nova pessoa
     Pessoa pessoa = new Pessoa();
     pessoa.setCpf(request.cpf());
     pessoa.setDataNascimento(request.dataNascimento());
@@ -55,15 +60,13 @@ public class FuncionarioServiceImp implements FuncionarioService {
     pessoaRepository.persist(pessoa);
     funcionario.setPessoa(pessoa);
 
-    // Criando um novo usuário
     Usuario usuario = new Usuario();
     usuario.setEmail(request.email());
     usuario.setSenha(hashService.getHashSenha(request.senha()));
     usuario.setPessoa(pessoa);
-    usuario.setRole("Funcionario");
+    usuario.setRole("FUNCIONARIO");
     usuarioRepository.persist(usuario);
 
-    // Adicionando o usuário à lista de usuários da pessoa
     pessoa.getUsuarios().add(usuario);
 
     repository.persist(funcionario);
@@ -74,6 +77,10 @@ public class FuncionarioServiceImp implements FuncionarioService {
   @Transactional
   public void update(long id, FuncionarioReduzidoRequest request) {
     Funcionario funcionario = repository.findById(id);
+    if (funcionario == null) {
+      throw ValidationException.of("id", "Funcionario nao encontrado.");
+    }
+
     funcionario.setCargo(request.cargo());
     funcionario.setDataAdmissao(request.dataAdmissao());
     funcionario.setSalario(request.salario());
@@ -88,6 +95,10 @@ public class FuncionarioServiceImp implements FuncionarioService {
   @Transactional
   public void update(String email, FuncionarioReduzidoRequest request) {
     Funcionario funcionario = repository.findByEmail(email);
+    if (funcionario == null) {
+      throw ValidationException.of("email", "Funcionario nao encontrado.");
+    }
+
     funcionario.setCargo(request.cargo());
     funcionario.setDataAdmissao(request.dataAdmissao());
     funcionario.setSalario(request.salario());
@@ -106,19 +117,19 @@ public class FuncionarioServiceImp implements FuncionarioService {
   }
 
   @Override
+  @Transactional
   public void resetarSenha(Long id) {
     Funcionario funcionario = repository.findById(id);
     if (funcionario == null) {
-        throw ValidationException.of("id", "O funcionario com ID " + id + " não foi encontrado.");
+        throw ValidationException.of("id", "O funcionario com ID " + id + " nao foi encontrado.");
     }
 
     Usuario usuario = funcionario.getPessoa().getUsuarios().stream()
-        .filter(u -> "Funcionario".equals(u.getRole()))
+        .filter(u -> "FUNCIONARIO".equals(u.getRole()))
         .findFirst()
-        .orElseThrow(() -> ValidationException.of("usuario", "Usuário 'Funcionario' não encontrado."));
+        .orElseThrow(() -> ValidationException.of("usuario", "Usuario 'Funcionario' nao encontrado."));
 
     String senhaTemporaria = gerarSenhaAleatoria(6);
-
     String novaHash = hashService.getHashSenha(senhaTemporaria);
     usuario.setSenha(novaHash);
   }
@@ -129,11 +140,11 @@ public class FuncionarioServiceImp implements FuncionarioService {
     Usuario usuario = usuarioRepository.findByEmail(email);
     
     if (usuario == null) {
-        throw ValidationException.of("email", "O usuário não foi encontrado.");
+        throw ValidationException.of("email", "O usuario nao foi encontrado.");
     }
   
     if (novaSenha == null || novaSenha.trim().isEmpty()) {
-         throw ValidationException.of("novaSenha", "A nova senha não pode ser vazia.");
+         throw ValidationException.of("novaSenha", "A nova senha nao pode ser vazia.");
     }
     
     String novaHash = hashService.getHashSenha(novaSenha);
@@ -146,12 +157,12 @@ public class FuncionarioServiceImp implements FuncionarioService {
     Usuario usuario = usuarioRepository.findByEmail(email);
     
     if (usuario == null) {
-        throw ValidationException.of("email", "O usuário não foi encontrado.");
+        throw ValidationException.of("email", "O usuario nao foi encontrado.");
     }
     
     Usuario usuarioExistente = usuarioRepository.findByEmail(novoEmail);
     if (usuarioExistente != null && usuarioExistente.getId() != usuario.getId()) {
-        throw ValidationException.of("novoEmail", "Este novo e-mail já está cadastrado.");
+        throw ValidationException.of("novoEmail", "Este novo e-mail ja esta cadastrado.");
     }
 
     usuario.setEmail(novoEmail);
@@ -160,59 +171,63 @@ public class FuncionarioServiceImp implements FuncionarioService {
   @Override
   public List<FuncionarioResponse> findAll(Integer page, Integer pageSize) {
     PanacheQuery<Funcionario> query = null;
-        if (page == null || pageSize == null)
-            query = repository.findAll();
-        else
-            query = repository.findAll().page(page, pageSize);
+    if (page == null || pageSize == null) {
+      query = repository.findAll();
+    } else {
+      query = repository.findAll().page(page, pageSize);
+    }
 
-        return query.list().stream().
-                      map(FuncionarioResponse::valueOf).
-                      toList();
+    return query.list().stream()
+      .map(FuncionarioResponse::valueOf)
+      .toList();
   }
 
   @Override
   public List<FuncionarioResponse> findAll() {
-    return repository.findAll().stream().
-                  map(FuncionarioResponse::valueOf).
-                  toList();
+    return repository.findAll().stream()
+      .map(FuncionarioResponse::valueOf)
+      .toList();
   }
 
   @Override
   public FuncionarioResponse findById(Long id) {
     validarFuncionarioId(id);
-    return FuncionarioResponse.valueOf(repository.findById(id));
+    Funcionario funcionario = repository.findById(id);
+    if (funcionario == null) {
+      throw ValidationException.of("id", "Funcionario nao encontrado.");
+    }
+    return FuncionarioResponse.valueOf(funcionario);
   }
   
   @Override
   public UsuarioResponse findEmailbyId(long id) {
-    // 1. Validar e Buscar o Funcionario
     Funcionario funcionario = repository.findById(id);
     if (funcionario == null) {
-        throw ValidationException.of("id", "O funcionario com ID " + id + " não foi encontrado.");
+        throw ValidationException.of("id", "O funcionario com ID " + id + " nao foi encontrado.");
     }
 
-    // 2. Filtrar o usuário com a role "Funcionario"
     String email = funcionario.getPessoa().getUsuarios().stream()
-        .filter(usuario -> "Funcionario".equals(usuario.getRole())) // Usa .equals() para comparação exata de role
+        .filter(usuario -> "FUNCIONARIO".equals(usuario.getRole()))
         .findFirst()
-        .map(Usuario::getEmail) // Mapeia para o email se o Optional estiver presente
-        .orElseThrow(() -> ValidationException.of("email", "Usuário com role 'Funcionario' não encontrado para este funcionario."));
+        .map(Usuario::getEmail)
+        .orElseThrow(() -> ValidationException.of("email", "Usuario com role 'Funcionario' nao encontrado para este funcionario."));
 
-    // 3. Retorna o Response DTO (Assumindo que UsuarioResponse é um record com um campo 'email')
     return new UsuarioResponse(email);
   }
   
   @Override
   public List<FuncionarioResponse> findByNome(String nome) {
-    return repository.findByNome(nome).stream().
-                  map(FuncionarioResponse::valueOf).toList();
+    return repository.findByNome(nome).stream()
+      .map(FuncionarioResponse::valueOf)
+      .toList();
   }
 
   @Override
   public FuncionarioResponse findByEmail(String email) {
     Funcionario funcionario = repository.findByEmail(email);
-    if(funcionario == null)
-      throw ValidationException.of("email"," funcionario não encontrado");
+    if(funcionario == null) {
+      throw ValidationException.of("email","Funcionario nao encontrado");
+    }
     return FuncionarioResponse.valueOf(funcionario);
   }
 
@@ -226,26 +241,40 @@ public class FuncionarioServiceImp implements FuncionarioService {
     return repository.count("UPPER(nome) LIKE ?1", "%" + nome.toUpperCase() + "%");
   }
 
-
-  //---------------------Auxiliares---------------------//
-  // Adicione este método na classe FuncionarioServiceImp
   private String gerarSenhaAleatoria(int length) {
       return "123456";
-      // String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      // StringBuilder senha = new StringBuilder();
-      // java.util.Random random = new java.util.Random();
-      
-      // for (int i = 0; i < length; i++) {
-      //     senha.append(caracteres.charAt(random.nextInt(caracteres.length())));
-      // }
-      // return senha.toString();
   }
 
-  //---------------------Validacoes---------------------//
-
   public void validarFuncionarioId(Long id) {
-    Funcionario  funcionario = repository.findById(id);
-    if (funcionario == null)
-      throw ValidationException.of("id", "ID inválido.");
+    Funcionario funcionario = repository.findById(id);
+    if (funcionario == null) {
+      throw ValidationException.of("id", "ID invalido.");
+    }
+  }
+
+  @Override
+  public Long findUsuarioIdByFuncionarioId(Long id) {
+    Funcionario funcionario = repository.findById(id);
+    if (funcionario == null) {
+      throw ValidationException.of("id", "Funcionario nao encontrado.");
+    }
+    Usuario usuario = funcionario.getPessoa().getUsuarios().stream()
+      .filter(u -> "FUNCIONARIO".equalsIgnoreCase(u.getRole()))
+      .findFirst()
+      .orElseThrow(() -> ValidationException.of("usuario", "Usuario com role 'Funcionario' nao encontrado."));
+    return usuario.getId();
+  }
+
+  @Override
+  public Long findUsuarioIdByEmail(String email) {
+    Funcionario funcionario = repository.findByEmail(email);
+    if (funcionario == null) {
+      throw ValidationException.of("email", "Funcionario nao encontrado.");
+    }
+    Usuario usuario = funcionario.getPessoa().getUsuarios().stream()
+      .filter(u -> "FUNCIONARIO".equalsIgnoreCase(u.getRole()))
+      .findFirst()
+      .orElseThrow(() -> ValidationException.of("usuario", "Usuario com role 'Funcionario' nao encontrado."));
+    return usuario.getId();
   }
 }

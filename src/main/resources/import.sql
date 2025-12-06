@@ -1,24 +1,24 @@
 -- Insere uma pessoa que é APENAS cliente
 INSERT INTO Pessoa (nome, cpf, dataNascimento) VALUES ('João Cliente', '12345678901', '1990-05-10');
 INSERT INTO Cliente (id_pessoa, permitirMarketing) VALUES (1, True);
-INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('joao@cliente.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'Cliente', 1); -- Senha '123456'
+INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('joao@cliente.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'CLIENTE', 1); -- Senha '123456'
 
 -- Insere uma pessoa que é APENAS funcionário
 INSERT INTO Pessoa (nome, cpf, dataNascimento) VALUES ('Maria Funcionario', '98765432109', '1985-08-20');
 INSERT INTO Funcionario (id_pessoa, salario, dataAdmissao) VALUES (2, 5000.00, '2020-01-15');
-INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('maria@funcionario.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'Funcionario', 2); -- Senha '123456'
+INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('maria@funcionario.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'FUNCIONARIO', 2); -- Senha '123456'
 
 -- Insere uma pessoa que é cliente E funcionário
 INSERT INTO Pessoa (nome, cpf, dataNascimento) VALUES ('Carlos Cliente e Funcionario', '11122233344', '1995-03-15');
 INSERT INTO Cliente (id_pessoa, permitirMarketing) VALUES (3, False);
 INSERT INTO Funcionario (id_pessoa, salario, dataAdmissao) VALUES (3, 6500.00, '2022-06-01');
-INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('carlos@cliente.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'Cliente', 3); -- Senha '123456'
-INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('carlos@funcionario.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'Funcionario', 3); -- Senha '123456'
+INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('carlos@cliente.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'CLIENTE', 3); -- Senha '123456'
+INSERT INTO Usuario (email, senha, role, id_pessoa) VALUES ('carlos@funcionario.com', '9od+0XAJyHTOE1yZNMikC/9swjRVO1Dkt+Rc7+nQxH6c5EnscBiykIJk+81XMWsEE3emhPDIv89kwSqCQqd7TA==', 'FUNCIONARIO', 3); -- Senha '123456'
 
 -- Inserindo Marcas
-INSERT INTO Marca (nome, cnpj) VALUES ('Fender', '11.111.111/0001-11');
-INSERT INTO Marca (nome, cnpj) VALUES ('Gibson', '22.222.222/0001-22');
-INSERT INTO Marca (nome, cnpj) VALUES ('Ibanez', '33.333.333/0001-33');
+INSERT INTO Marca (nome, cnpj) VALUES ('Fender', '11111111000111');
+INSERT INTO Marca (nome, cnpj) VALUES ('Gibson', '22222222000122');
+INSERT INTO Marca (nome, cnpj) VALUES ('Ibanez', '33333333000133');
 
 -- Inserindo Cores
 INSERT INTO Cor (nome, codigoHexadecimal) VALUES ('Sunburst', '#FDB813');

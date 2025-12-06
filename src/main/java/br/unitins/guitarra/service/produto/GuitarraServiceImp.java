@@ -214,6 +214,25 @@ public class GuitarraServiceImp implements GuitarraService {
     return repository.count("nome", nome);
   }
 
+  @Override
+  @Transactional
+  public GuitarraResponse updateStatus(Long id, Boolean status) {
+    if (id == null) {
+      throw ValidationException.of("id", "O id para alteraÇõÇœo de status nÇœo pode ser nulo.");
+    }
+    if (status == null) {
+      throw ValidationException.of("status", "O status nÇœo pode ser nulo.");
+    }
+
+    Guitarra guitarra = repository.findById(id);
+    if (guitarra == null) {
+      throw ValidationException.of("id", "A guitarra com o id " + id + " nÇœo foi encontrada.");
+    }
+
+    guitarra.setStatus(status);
+    return GuitarraResponse.valueOf(guitarra);
+  }
+
   // Métodos auxiliares para buscar entidades relacionadas
 
   private Marca findMarcaById(Long id) {

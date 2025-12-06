@@ -21,6 +21,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import jakarta.annotation.security.RolesAllowed;
 
 @Path("/marcas")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -31,6 +32,7 @@ public class MarcaResource {
     MarcaService service;
 
     @POST
+    @RolesAllowed({"FUNCIONARIO"})
     public Response create(MarcaRequest request) {
         MarcaResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
@@ -39,6 +41,7 @@ public class MarcaResource {
     @PUT
     @Path("/{id}")
     @Transactional
+    @RolesAllowed({"FUNCIONARIO"})
     public Response update(@PathParam("id") Long id, MarcaRequest request) {
         service.update(id, request);
         return Response.status(Status.NO_CONTENT).build();
@@ -47,6 +50,7 @@ public class MarcaResource {
     @DELETE
     @Path("/{id}")
     @Transactional
+    @RolesAllowed({"FUNCIONARIO"})
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.status(Status.NO_CONTENT).build();

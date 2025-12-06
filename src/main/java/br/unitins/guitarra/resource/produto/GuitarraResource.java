@@ -8,12 +8,16 @@ import java.util.Set;
 import org.jboss.resteasy.reactive.RestForm;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
+import br.unitins.guitarra.dto.produto.request.GuitarraStatusRequest;
 import br.unitins.guitarra.dto.produto.request.GuitarraRequest;
 import br.unitins.guitarra.dto.produto.response.GuitarraResponse;
 import br.unitins.guitarra.service.produto.GuitarraService;
 import br.unitins.guitarra.service.storage.ProdutoStorageService;
+import br.unitins.guitarra.validation.ValidationException;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -47,7 +51,8 @@ public class GuitarraResource {
     );
 
     @POST
-    public Response create(GuitarraRequest request) {
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response create(@Valid GuitarraRequest request) {
         GuitarraResponse response = service.create(request);
         return Response.status(Status.CREATED).entity(response).build();
     }
@@ -55,7 +60,8 @@ public class GuitarraResource {
     @PUT
     @Path("/{id}")
     @Transactional
-    public Response update(GuitarraRequest request, @PathParam("id") Long id) {
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response update(@Valid GuitarraRequest request, @PathParam("id") Long id) {
         service.update(request, id);
         return Response.status(Status.NO_CONTENT).build();
     }
@@ -63,6 +69,7 @@ public class GuitarraResource {
     @DELETE
     @Path("/{id}")
     @Transactional
+    @RolesAllowed({"FUNCIONARIO"})
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.status(Status.NO_CONTENT).build();
@@ -101,38 +108,43 @@ public class GuitarraResource {
         return Response.ok(service.count()).build();
     }
 
+    @PUT
+    @Path("/{id}/status")
+    @Transactional
+    @RolesAllowed({"FUNCIONARIO"})
+    public Response updateStatus(@PathParam("id") Long id, @Valid GuitarraStatusRequest statusRequest) {
+        GuitarraResponse response = service.updateStatus(id, statusRequest.status());
+        return Response.ok(response).build();
+    }
+
     // rotas de imagens
     
     @POST
     @Path("/imagem/{id}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @RolesAllowed({"FUNCIONARIO"})
     public Response uploadImagemProduto(
             @PathParam("id") Long id,
             @RestForm("file") FileUpload file
     ){
         try {
-        // 1. Valida mime type
-        if (!ALLOWED_TYPES.contains(file.contentType())) {
-            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE)
-                    .entity("Formato de imagem não permitido")
-                    .build();
-        }
+            if (file == null) {
+                throw ValidationException.of("file", "Arquivo é obrigatório.");
+            }
+            if (!ALLOWED_TYPES.contains(file.contentType())) {
+                throw ValidationException.of("file", "Formato de imagem não permitido.");
+            }
+            if (file.size() > 10 * 1024 * 1024) {
+                throw ValidationException.of("file", "Arquivo excede 10MB.");
+            }
 
-        // 2. Valida tamanho (máx 10MB)
-        if (file.size() > 10 * 1024 * 1024) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Arquivo exceeds 10MB")
-                    .build();
-        }
+            InputStream is = Files.newInputStream(file.uploadedFile());
+            String key = produtoStorageService.uploadImagem(id, is);
 
-        // 3. Pega InputStream
-        InputStream is = Files.newInputStream(file.uploadedFile());
+            return Response.ok("Upload realizado: " + key).build();
 
-        // 4. Chama o storage service (sem size/contentType)
-        String key = produtoStorageService.uploadImagem(id, is);
-
-        return Response.ok("Upload realizado: " + key).build();
-
+        } catch (ValidationException e) {
+            throw e;
         } catch (Exception e) {
             return Response.serverError().entity("Erro: " + e.getMessage()).build();
         }
@@ -146,8 +158,8 @@ public class GuitarraResource {
             InputStream url = produtoStorageService.getPrivateImage(id);
             return Response.ok(url).build();
         } catch (Exception e) {
-            // Tratar erro se a chave não existir ou o URL não puder ser gerado
-            return Response.status(Response.Status.NOT_FOUND).entity("URL da imagem não encontrada ou erro: " + e.getMessage()).build();
+            // Tratar erro se a chave nǜo existir ou o URL nǜo puder ser gerado
+            return Response.status(Response.Status.NOT_FOUND).entity("URL da imagem nǜo encontrada ou erro: " + e.getMessage()).build();
         }
     }
 }

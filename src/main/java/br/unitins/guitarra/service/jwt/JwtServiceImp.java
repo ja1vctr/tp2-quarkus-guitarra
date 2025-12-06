@@ -17,7 +17,7 @@ public class JwtServiceImp implements JwtService{
         Instant now = Instant.now();
         Instant expiryDate = now.plus(EXPIRATION_TIME);
         Set<String> roles = new HashSet<String>();
-        roles.add(usuario.getRole());
+        roles.add(usuario.getRole() != null ? usuario.getRole().toUpperCase() : "");
         return Jwt.issuer("unitins-jwt")
                 .subject(usuario.getEmail())
                 .groups(roles)

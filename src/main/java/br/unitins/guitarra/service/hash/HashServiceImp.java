@@ -34,8 +34,4 @@ public class HashServiceImp implements HashService {
         }
     }
 
-    public static void main(String[] args) {
-        HashService hash = new HashServiceImp();
-        System.out.println(hash.getHashSenha("123456"));
-    }
 }

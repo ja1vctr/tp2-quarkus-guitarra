@@ -25,4 +25,6 @@ public interface FuncionarioService {
   FuncionarioResponse findByEmail(String email);
   public Long count();
   public Long count(String nome);
+  Long findUsuarioIdByFuncionarioId(Long id);
+  Long findUsuarioIdByEmail(String email);
 }

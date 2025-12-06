@@ -25,4 +25,6 @@ public interface ClienteService {
   ClienteResponse findByEmail(String email);
   public Long count();
   public Long count(String nome);
+  Long findUsuarioIdByClienteId(Long id);
+  Long findUsuarioIdByEmail(String email);
 }

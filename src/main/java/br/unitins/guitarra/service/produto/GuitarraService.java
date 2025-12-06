@@ -16,4 +16,5 @@ public interface GuitarraService {
   List<GuitarraResponse> findByModelo(String modelo);
   public Long count();
   public Long count(String nome);
+  GuitarraResponse updateStatus(Long id, Boolean status);
 }

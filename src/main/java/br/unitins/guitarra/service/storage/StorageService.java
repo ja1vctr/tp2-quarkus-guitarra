@@ -144,21 +144,4 @@ public class StorageService {
                 .build();
         s3Client.deleteObject(deleteObjectRequest);
     }
-
-    /**
-     * Teste local
-     */
-    public static void main(String[] args) throws IOException {
-        StorageService s = new StorageService(
-                "tpii-quarkus-bucket",
-                "00571793480a81d0000000001",
-                "K005AQhT39bAtazSYyY725S9/loyQoo"
-        );
-
-        String key = "produtos/3-imagem.png";
-        Path destino = Path.of("imagem-baixada.png");
-
-        s.downloadToFile(key, destino);
-        System.out.println("✅ Arquivo baixado em: " + destino.toAbsolutePath());
-    }
 }
